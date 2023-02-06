@@ -15,6 +15,10 @@
 #include <map>
 #include <vector>
 #include "IComponent.hpp"
+#include "FalseComponent.hpp"
+#include "TrueComponent.hpp"
+#include "AndComponent.hpp"
+#include "NotComponent.hpp"
 
 class Graph {
     public:
@@ -28,10 +32,13 @@ class Graph {
         void simulate() {tick += 1;};
         void mainLoop();
         void loop();
+        std::unique_ptr<nts::IComponent> createComponent(const std::string &type);
 
     private:
-        std::map<std::string, std::string> chipsets;
+        std::map<std::string, std::unique_ptr<nts::IComponent>> chipsets;
         int tick;
 };
+
+std::ostream &operator<<( std :: ostream & s , nts :: Tristate v );
 
 #endif /* !GRAPH */

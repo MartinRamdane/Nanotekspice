@@ -7,6 +7,12 @@
 
 #include "Graph.hpp"
 
+std::ostream &operator<<( std :: ostream & s , nts :: Tristate v )
+{
+    s << (v != nts::Undefined ? (v == nts::True ? 1 : 0) : 'U');
+    return s;
+}
+
 Graph::Graph(const std::string filename)
 {
     tick = 0;
@@ -38,13 +44,17 @@ void Graph::display()
     std::cout << "tick: " << tick << std::endl;
     std::cout << "input(s):" << std::endl;
     for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
+        // std::cout << "value :" << (it->second)->compute(1) << std::endl;
         // add test if is input
-       // std::cout << it->first << ": " << (it->second).compute() << std::endl;
+        if ((it->first) == "i1" || (it->first) == "i2" )
+            std::cout << "  " << (it->first) << ": " << (it->second)->compute(1) << std::endl;
     }
     std::cout << "output(s):" << std::endl;
     for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
         // add test if is output
-       // std::cout << it->first << ": " << (it->second).compute() << std::endl;
+       // std::cout << it->first << ": " << (it->second)->compute() << std::endl;
+        if ((it->first) == "no")
+            std::cout << "  " <<  "result: " << (it->second)->compute(2) << std::endl;
     }
 }
 
@@ -69,9 +79,9 @@ void Graph::parseFile(const std::string filename)
         while(iss >> word)
             tab.push_back(word);
         if (chip && tab[0] != ".links:")
-            chipsets[tab[1]] = tab[0];
+            chipsets[tab[1]] = createComponent(tab[0]);
         if (link)
-            std::cout << "create link" << std::endl;
+            createLink(tab[0], tab[1]);
         if (tab[0] == ".chipsets:") {
             chip = true; link = false;
         }
@@ -80,18 +90,34 @@ void Graph::parseFile(const std::string filename)
             chip = false;
         }
     }
-    for(auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
-        std::cout << "key: " << it->first << " ";
-        std::cout << "value :" << it->second << std::endl;
-    }
+    // for(auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
+    //     std::cout << "key: " << it->first << " ";
+    //     std::cout << "value :" << it->second << std::endl;
+    // }
 }
 
-// void Graph::createLink(std::string source, std::string target)
-// {
-//     std::string srcName = source.substr(source.find(":"));
-//     int srcPin = stoi(source.substr(srcName.size()));
-//     std::string targetName = target.substr(target.find(":"));
-//     int targetPin = stoi(target.substr(targetName.size()));
+void Graph::createLink(std::string source, std::string target)
+{
+    std::string srcName = source.substr(0, source.find(":"));
+    int srcPin = stoi(source.substr(srcName.size() + 1));
+    std::string targetName = target.substr(0, target.find(":"));
+    int targetPin = stoi(target.substr(targetName.size() + 1));
+    chipsets[targetName]->setLink(targetPin, *(chipsets[srcName].get()), srcPin);
+}
 
-//     chipsets[srcName].setLink(srcPin, chipsets[targetName], targetPin);
-// }
+std::unique_ptr<nts::IComponent> Graph::createComponent(const std::string &type)
+{
+    if (type == "false") {
+        return (std::make_unique<nts::FalseComponent>());
+    }
+    if (type == "true") {
+        return (std::make_unique<nts::TrueComponent>());
+    }
+    if (type == "and") {
+        return (std::make_unique<nts::AndComponent>());
+    }
+    if (type == "not") {
+        return (std::make_unique<nts::NotComponent>());
+    }
+    return nullptr;
+}
