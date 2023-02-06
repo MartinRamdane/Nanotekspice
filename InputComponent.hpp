@@ -14,7 +14,7 @@ namespace nts
 {
     class InputComponent : public AComponent {
         public:
-            InputComponent(Tristate _valueOuput) : AComponent(1) {valueOuput[0] = _valueOuput;};
+            InputComponent() : AComponent(1) {valueOuput[0] = Undefined;};
             ~InputComponent() {};
 
             nts::Tristate compute(std::size_t pin) {return valueOuput[pin - 1];};
