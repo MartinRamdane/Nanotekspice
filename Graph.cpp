@@ -107,17 +107,13 @@ void Graph::createLink(std::string source, std::string target)
 
 std::unique_ptr<nts::IComponent> Graph::createComponent(const std::string &type)
 {
-    if (type == "false") {
+    if (type == "false")
         return (std::make_unique<nts::FalseComponent>());
-    }
-    if (type == "true") {
+    if (type == "true")
         return (std::make_unique<nts::TrueComponent>());
-    }
-    if (type == "and") {
+    if (type == "and")
         return (std::make_unique<nts::AndComponent>());
-    }
-    if (type == "not") {
+    if (type == "not")
         return (std::make_unique<nts::NotComponent>());
-    }
     return nullptr;
 }
