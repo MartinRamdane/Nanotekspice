@@ -24,6 +24,8 @@
 #include "InputComponent.hpp"
 #include "OutputComponent.hpp"
 #include "NotComponent.hpp"
+#include "ClockComponent.hpp"
+#include "XorComponent.hpp"
 
 class Graph {
     public:

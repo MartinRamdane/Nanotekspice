@@ -27,10 +27,8 @@ void Graph::mainLoop()
             display();
         if (input == "loop")
             loop();
-        if (input == "simulate") {
+        if (input == "simulate")
             simulate();
-            assignValue();
-        }
         if (input.find("=") != std::string::npos) {
             std::string target = input.substr(0, input.find("="));
             nts::Tristate value = stoi(input.substr(target.size() + 1)) == 0 ? nts::False : nts::True;
@@ -48,7 +46,8 @@ void Graph::display()
     std::cout << "input(s):" << std::endl;
     for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
         auto *checkIfInput = dynamic_cast<nts::InputComponent *>((it->second).get());
-        if (checkIfInput)
+        auto *checkIfClock = dynamic_cast<nts::ClockComponent *>((it->second).get());
+        if (checkIfInput || checkIfClock)
             std::cout << "  " << (it->first) << ": " << (it->second)->compute(1) << std::endl;
     }
     std::cout << "output(s):" << std::endl;
@@ -120,20 +119,39 @@ std::unique_ptr<nts::IComponent> Graph::createComponent(const std::string &type)
         return (std::make_unique<nts::InputComponent>());
     if (type == "output")
         return (std::make_unique<nts::OutpoutComponent>());
+    if (type == "xor")
+        return (std::make_unique<nts::XorComponent>());
+    if (type == "clock")
+        return (std::make_unique<nts::ClockComponent>());
     return nullptr;
 }
 
 void Graph::assignValue()
 {
     for (auto it = inputs.begin() ; it != inputs.end() ; ++it) {
-        nts::InputComponent *tmp = static_cast<nts::InputComponent *>(chipsets[it->first].get());
-        tmp->changeValue(it->second);
+        nts::InputComponent *input = dynamic_cast<nts::InputComponent *>(chipsets[it->first].get());
+        nts::ClockComponent *clock = dynamic_cast<nts::ClockComponent *>(chipsets[it->first].get());
+        if (input)
+            input->changeValue(it->second);
+        else if (clock) {
+            clock->changeValue(it->second);
+        }
     }
 }
 
 void Graph::simulate()
 {
     tick += 1;
+    assignValue();
+    for (auto it = chipsets.begin() ; it != chipsets.end(); ++it) {
+        nts::ClockComponent *clock = dynamic_cast<nts::ClockComponent *>(chipsets[it->first].get());
+        if (clock) {
+            if (inputs.find(it->first) != inputs.end())
+                inputs.erase(it->first);
+            else
+                clock->simulate(tick);
+        }
+    }
 }
 
 volatile sig_atomic_t stopLoop;
