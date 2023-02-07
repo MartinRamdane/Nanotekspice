@@ -103,6 +103,7 @@ void Graph::createLink(std::string source, std::string target)
     std::string targetName = target.substr(0, target.find(":"));
     int targetPin = stoi(target.substr(targetName.size() + 1));
     chipsets[targetName]->setLink(targetPin, *(chipsets[srcName].get()), srcPin);
+    chipsets[srcName]->setLink(srcPin, *(chipsets[targetName]), targetPin);
 }
 
 std::unique_ptr<nts::IComponent> Graph::createComponent(const std::string &type)
