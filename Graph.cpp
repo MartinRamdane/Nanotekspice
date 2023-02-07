@@ -27,13 +27,13 @@ void Graph::mainLoop()
             display();
         if (input == "simulate")
             simulate();
-        if (input == "exit")
-            break;
         if (input.find("=") != std::string::npos) {
             std::string target = input.substr(0, input.find("="));
             nts::Tristate value = stoi(input.substr(target.size() + 1)) == 0 ? nts::False : nts::True;
             assignValue((*chipsets[target]), value);
         }
+        if (input == "exit")
+            break;
         std::cout << "> ";
     }
 }
@@ -43,17 +43,15 @@ void Graph::display()
     std::cout << "tick: " << tick << std::endl;
     std::cout << "input(s):" << std::endl;
     for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
-        // std::cout << "value :" << (it->second)->compute(1) << std::endl;
-        // add test if is input
-        if ((it->first) == "i1" || (it->first) == "i2" )
+        auto *checkIfInput = dynamic_cast<nts::InputComponent *>((it->second).get());
+        if (checkIfInput)
             std::cout << "  " << (it->first) << ": " << (it->second)->compute(1) << std::endl;
     }
     std::cout << "output(s):" << std::endl;
     for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
-        // add test if is output
-       // std::cout << it->first << ": " << (it->second)->compute() << std::endl;
-        if ((it->first) == "out")
-            std::cout << "  " <<  "result: " << (it->second)->compute(1) << std::endl;
+        nts::OutpoutComponent *output = dynamic_cast<nts::OutpoutComponent *>((it->second).get());
+        if (output)
+            std::cout <<  "  " << it->first << ": " << (it->second)->compute(1) << std::endl;
     }
 }
 
