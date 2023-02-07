@@ -45,17 +45,14 @@ void Circuit::display()
 {
     std::cout << "tick: " << tick << std::endl;
     std::cout << "input(s):" << std::endl;
-    for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
-        auto *checkIfInput = dynamic_cast<nts::InputComponent *>((it->second).get());
-        auto *checkIfClock = dynamic_cast<nts::ClockComponent *>((it->second).get());
-        if (checkIfInput || checkIfClock)
-            std::cout << "  " << (it->first) << ": " << (it->second)->compute(1) << std::endl;
+    std::sort(inputsSorted.begin(), inputsSorted.end(), [](std::string a, std::string b) {return a<b;});
+    for (auto itInputs = inputsSorted.begin() ; itInputs != inputsSorted.end() ; ++itInputs) {
+        std::cout << "  " << *(itInputs) << ": " << chipsets[*itInputs]->compute(1) << std::endl;
     }
     std::cout << "output(s):" << std::endl;
-    for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
-        nts::OutpoutComponent *output = dynamic_cast<nts::OutpoutComponent *>((it->second).get());
-        if (output)
-            std::cout <<  "  " << it->first << ": " << (it->second)->compute(1) << std::endl;
+    std::sort(outputsSorted.begin(), outputsSorted.end(), [](std::string a, std::string b) {return a<b;});
+    for (auto itOutputs = outputsSorted.begin() ; itOutputs != outputsSorted.end() ; ++itOutputs) {
+        std::cout << "  " << *(itOutputs) << ": " << chipsets[*itOutputs]->compute(1) << std::endl;
     }
 }
 
@@ -79,8 +76,13 @@ void Circuit::parseFile(const std::string filename)
         std::vector<std::string> tab;
         while(iss >> word)
             tab.push_back(word);
-        if (chip && tab[0] != ".links:")
+        if (chip && tab[0] != ".links:") {
             chipsets[tab[1]] = createComponent(tab[0]);
+            if (tab[0] == "input" || tab[0] == "clock")
+                inputsSorted.push_back(tab[1]);
+            if (tab[0] == "output")
+                outputsSorted.push_back(tab[1]);
+         }
         if (link)
             createLink(tab[0], tab[1]);
         if (tab[0] == ".chipsets:") {

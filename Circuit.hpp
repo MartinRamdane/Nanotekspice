@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <algorithm>
 #include "IComponent.hpp"
 #include "FalseComponent.hpp"
 #include "TrueComponent.hpp"
@@ -51,6 +52,8 @@ class Circuit {
     private:
         std::map<std::string, std::unique_ptr<nts::IComponent>> chipsets;
         std::map<std::string, nts::Tristate> inputs;
+        std::vector<std::string> inputsSorted;
+        std::vector<std::string> outputsSorted;
         int tick;
 };
 
