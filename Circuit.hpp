@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** Graph.hpp
+** Circuit.hpp
 ** File description:
-** Graph
+** Circuit
 */
 
-#ifndef GRAPH
-    #define GRAPH
+#ifndef CIRCUIT
+    #define CIRCUIT
 
 #include <iostream>
 #include <fstream>
@@ -27,10 +27,10 @@
 #include "ClockComponent.hpp"
 #include "XorComponent.hpp"
 
-class Graph {
+class Circuit {
     public:
-        Graph(const std::string filename);
-        ~Graph();
+        Circuit(const std::string filename);
+        ~Circuit();
 
         void parseFile(const std::string filename);
         void createLink(std::string source, std::string target);
@@ -49,4 +49,4 @@ class Graph {
 
 std::ostream &operator<<( std :: ostream & s , nts :: Tristate v );
 
-#endif /* !GRAPH */
+#endif /* !CIRCUIT */

@@ -5,10 +5,10 @@
 #include "NotComponent.hpp"
 #include "AndComponent.hpp"
 #include "InputComponent.hpp"
-#include "Graph.hpp"
+#include "Circuit.hpp"
 
 int main(int ac, char **av)
 {
     if (ac > 1)
-        Graph graph(av[1]);
+        Circuit Circuit(av[1]);
 }

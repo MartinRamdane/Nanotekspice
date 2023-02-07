@@ -1,24 +1,24 @@
 /*
 ** EPITECH PROJECT, 2023
-** Graph.cpp
+** Circuit.cpp
 ** File description:
-** Graph.hpp
+** Circuit.hpp
 */
 
-#include "Graph.hpp"
+#include "Circuit.hpp"
 
-Graph::Graph(const std::string filename)
+Circuit::Circuit(const std::string filename)
 {
     tick = 0;
     parseFile(filename);
     mainLoop();
 }
 
-Graph::~Graph()
+Circuit::~Circuit()
 {
 }
 
-void Graph::mainLoop()
+void Circuit::mainLoop()
 {
     std::string input;
     std::cout << "> ";
@@ -40,7 +40,7 @@ void Graph::mainLoop()
     }
 }
 
-void Graph::display()
+void Circuit::display()
 {
     std::cout << "tick: " << tick << std::endl;
     std::cout << "input(s):" << std::endl;
@@ -58,7 +58,7 @@ void Graph::display()
     }
 }
 
-void Graph::parseFile(const std::string filename)
+void Circuit::parseFile(const std::string filename)
 {
     std::ifstream file(filename.c_str());
     if (!file.is_open()) {
@@ -96,7 +96,7 @@ void Graph::parseFile(const std::string filename)
     // }
 }
 
-void Graph::createLink(std::string source, std::string target)
+void Circuit::createLink(std::string source, std::string target)
 {
     std::string srcName = source.substr(0, source.find(":"));
     int srcPin = stoi(source.substr(srcName.size() + 1));
@@ -106,7 +106,7 @@ void Graph::createLink(std::string source, std::string target)
     chipsets[srcName]->setLink(srcPin, *(chipsets[targetName]), targetPin);
 }
 
-std::unique_ptr<nts::IComponent> Graph::createComponent(const std::string &type)
+std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &type)
 {
     if (type == "false")
         return (std::make_unique<nts::FalseComponent>());
@@ -127,7 +127,7 @@ std::unique_ptr<nts::IComponent> Graph::createComponent(const std::string &type)
     return nullptr;
 }
 
-void Graph::assignValue()
+void Circuit::assignValue()
 {
     for (auto it = inputs.begin() ; it != inputs.end() ; ++it) {
         nts::InputComponent *input = dynamic_cast<nts::InputComponent *>(chipsets[it->first].get());
@@ -140,7 +140,7 @@ void Graph::assignValue()
     }
 }
 
-void Graph::simulate()
+void Circuit::simulate()
 {
     tick += 1;
     assignValue();
@@ -162,7 +162,7 @@ void checkIfSig(int signum) {
         stopLoop = 1;
 }
 
-void Graph::loop() {
+void Circuit::loop() {
     while (stopLoop != 1) {
         signal(SIGINT, checkIfSig);
         simulate();
