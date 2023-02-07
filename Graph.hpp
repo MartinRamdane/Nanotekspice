@@ -18,6 +18,8 @@
 #include "FalseComponent.hpp"
 #include "TrueComponent.hpp"
 #include "AndComponent.hpp"
+#include "InputComponent.hpp"
+#include "OutputComponent.hpp"
 #include "NotComponent.hpp"
 
 class Graph {

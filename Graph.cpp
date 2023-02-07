@@ -7,12 +7,6 @@
 
 #include "Graph.hpp"
 
-std::ostream &operator<<( std :: ostream & s , nts :: Tristate v )
-{
-    s << (v != nts::Undefined ? (v == nts::True ? 1 : 0) : 'U');
-    return s;
-}
-
 Graph::Graph(const std::string filename)
 {
     tick = 0;
@@ -35,6 +29,11 @@ void Graph::mainLoop()
             simulate();
         if (input == "exit")
             break;
+        if (input.find("=") != std::string::npos) {
+            std::string target = input.substr(0, input.find("="));
+            nts::Tristate value = stoi(input.substr(target.size() + 1)) == 0 ? nts::False : nts::True;
+            assignValue((*chipsets[target]), value);
+        }
         std::cout << "> ";
     }
 }
@@ -53,8 +52,8 @@ void Graph::display()
     for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
         // add test if is output
        // std::cout << it->first << ": " << (it->second)->compute() << std::endl;
-        if ((it->first) == "no")
-            std::cout << "  " <<  "result: " << (it->second)->compute(2) << std::endl;
+        if ((it->first) == "out")
+            std::cout << "  " <<  "result: " << (it->second)->compute(1) << std::endl;
     }
 }
 
@@ -115,5 +114,22 @@ std::unique_ptr<nts::IComponent> Graph::createComponent(const std::string &type)
         return (std::make_unique<nts::AndComponent>());
     if (type == "not")
         return (std::make_unique<nts::NotComponent>());
+    if (type == "input")
+        return (std::make_unique<nts::InputComponent>());
+    if (type == "output")
+        return (std::make_unique<nts::OutpoutComponent>());
     return nullptr;
+}
+
+void Graph::assignValue(nts::IComponent &target, nts::Tristate value)
+{
+    nts::InputComponent &tmp = static_cast<nts::InputComponent&>(target);
+    tmp.changeValue(value);
+}
+
+void Graph::loop() {
+    while (1) {
+        simulate();
+        display();
+    }
 }

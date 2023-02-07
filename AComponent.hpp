@@ -37,4 +37,6 @@ namespace nts
     };
 }
 
+std::ostream &operator<<( std :: ostream & s , nts :: Tristate v );
+
 #endif /* !ACOMPONENT */

@@ -35,3 +35,12 @@ AComponent::pinInfo AComponent::getLink(std::size_t pin) const
 {
     return (pins.at(pin));
 }
+
+std::ostream &operator<<( std :: ostream & s , nts :: Tristate v )
+{
+    if (v == nts::Undefined)
+        s << 'U';
+    else
+        s << (v == nts::True ? 1 : 0);
+    return s;
+}
