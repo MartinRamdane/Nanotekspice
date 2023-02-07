@@ -5,8 +5,8 @@
 ** OrComponent
 */
 
-#ifndef AND_COMPONENT
-    #define AND_COMPONENT
+#ifndef OR_COMPONENT
+    #define OR_COMPONENT
 
 #include "AComponent.hpp"
 #include <iostream>
@@ -22,4 +22,4 @@ namespace nts
     };
 }
 
-#endif /* !AND_COMPONENT */
+#endif /* !OR_COMPONENT */

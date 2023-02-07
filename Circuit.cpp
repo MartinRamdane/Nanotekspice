@@ -124,6 +124,18 @@ std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &typ
         return (std::make_unique<nts::XorComponent>());
     if (type == "clock")
         return (std::make_unique<nts::ClockComponent>());
+    if (type == "4001")
+        return (std::make_unique<nts::FourNorComponent>());
+    if (type == "4011")
+        return (std::make_unique<nts::FourNandComponent>());
+    if (type == "4081")
+        return (std::make_unique<nts::FourAndComponent>());
+    if (type == "4071")
+        return (std::make_unique<nts::FourOrComponent>());
+    if (type == "4030")
+        return (std::make_unique<nts::FourXorComponent>());
+    if (type == "4069")
+        return (std::make_unique<nts::SixNotComponent>());
     return nullptr;
 }
 
