@@ -25,12 +25,14 @@ void Graph::mainLoop()
     while (std::getline (std::cin, input)) {
         if (input == "display")
             display();
-        if (input == "simulate")
+        if (input == "simulate") {
             simulate();
+            assignValue();
+        }
         if (input.find("=") != std::string::npos) {
             std::string target = input.substr(0, input.find("="));
             nts::Tristate value = stoi(input.substr(target.size() + 1)) == 0 ? nts::False : nts::True;
-            assignValue((*chipsets[target]), value);
+            inputs[target] = value;
         }
         if (input == "exit")
             break;
@@ -119,10 +121,17 @@ std::unique_ptr<nts::IComponent> Graph::createComponent(const std::string &type)
     return nullptr;
 }
 
-void Graph::assignValue(nts::IComponent &target, nts::Tristate value)
+void Graph::assignValue()
 {
-    nts::InputComponent &tmp = static_cast<nts::InputComponent&>(target);
-    tmp.changeValue(value);
+    for (auto it = inputs.begin() ; it != inputs.end() ; ++it) {
+        nts::InputComponent *tmp = static_cast<nts::InputComponent *>(chipsets[it->first].get());
+        tmp->changeValue(it->second);
+    }
+}
+
+void Graph::simulate()
+{
+    tick += 1;
 }
 
 void Graph::loop() {

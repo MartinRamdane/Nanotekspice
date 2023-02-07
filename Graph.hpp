@@ -30,14 +30,15 @@ class Graph {
         void parseFile(const std::string filename);
         void createLink(std::string source, std::string target);
         void display();
-        void assignValue(nts::IComponent &target, nts::Tristate value); // only for input and clocks
-        void simulate() {tick += 1;};
+        void assignValue(); // only for input and clocks
+        void simulate();
         void mainLoop();
         void loop();
         std::unique_ptr<nts::IComponent> createComponent(const std::string &type);
 
     private:
         std::map<std::string, std::unique_ptr<nts::IComponent>> chipsets;
+        std::map<std::string, nts::Tristate> inputs;
         int tick;
 };
 
