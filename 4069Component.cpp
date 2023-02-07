@@ -29,10 +29,11 @@ void nts::SixNotComponent::setLink(std::size_t pin, nts::IComponent &other, std:
             case 4: nots[1].setLink(2, other, otherPin);break;
             case 6: nots[2].setLink(2, other, otherPin);break;
             case 8: nots[3].setLink(2, other, otherPin);break;
-            case 12: nots[4].setLink(2, other, otherPin);break;
-            case 10: nots[5].setLink(2, other, otherPin);break;
+            case 10: nots[4].setLink(2, other, otherPin);break;
+            case 12: nots[5].setLink(2, other, otherPin);break;
         }
-    } else {
+    }
+    else {
         switch (pin) {
             case 1: nots[0].setLink(1, other, otherPin); break;
             case 3: nots[1].setLink(1, other, otherPin);break;
@@ -49,7 +50,7 @@ nts::Tristate nts::SixNotComponent::compute(std::size_t pin)
 {
     if (pin % 2 == 0) {
         switch (pin) {
-            case 3: return nots[0].compute(2);
+            case 2: return nots[0].compute(2);
             case 4: return nots[1].compute(2);
             case 6: return nots[2].compute(2);
             case 8: return nots[3].compute(2);
@@ -59,12 +60,12 @@ nts::Tristate nts::SixNotComponent::compute(std::size_t pin)
     }
     else {
         switch (pin) {
-            case 1: return nots[0].compute(2);
-            case 3: return nots[1].compute(2);
-            case 5: return nots[2].compute(2);
-            case 9: return nots[3].compute(2);
-            case 11: return nots[4].compute(2);
-            case 13: return nots[5].compute(2);
+            case 1: return nots[0].compute(1);
+            case 3: return nots[1].compute(1);
+            case 5: return nots[2].compute(1);
+            case 9: return nots[3].compute(1);
+            case 11: return nots[4].compute(1);
+            case 13: return nots[5].compute(1);
         }
     }
     return nts::Undefined;
