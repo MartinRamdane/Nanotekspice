@@ -25,6 +25,8 @@ void Graph::mainLoop()
     while (std::getline (std::cin, input)) {
         if (input == "display")
             display();
+        if (input == "loop")
+            loop();
         if (input == "simulate") {
             simulate();
             assignValue();
@@ -134,8 +136,16 @@ void Graph::simulate()
     tick += 1;
 }
 
+volatile sig_atomic_t stopLoop;
+
+void checkIfSig(int signum) {
+    if (signum == SIGINT)
+        stopLoop = 1;
+}
+
 void Graph::loop() {
-    while (1) {
+    while (stopLoop != 1) {
+        signal(SIGINT, checkIfSig);
         simulate();
         display();
     }

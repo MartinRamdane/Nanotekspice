@@ -14,6 +14,9 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
 #include "IComponent.hpp"
 #include "FalseComponent.hpp"
 #include "TrueComponent.hpp"
