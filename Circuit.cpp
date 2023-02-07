@@ -31,7 +31,8 @@ void Circuit::mainLoop()
             simulate();
         if (input.find("=") != std::string::npos) {
             std::string target = input.substr(0, input.find("="));
-            nts::Tristate value = stoi(input.substr(target.size() + 1)) == 0 ? nts::False : nts::True;
+            std::string val = input.substr(target.size() + 1);
+            nts::Tristate value = val == "U" ? nts::Undefined : (stoi(val) == 0 ? nts::False : nts::True);
             inputs[target] = value;
         }
         if (input == "exit")
