@@ -33,6 +33,7 @@
 #include "XorComponent.hpp"
 #include "FourTComponent.hpp"
 #include "4069Component.hpp"
+#include "4008Component.hpp"
 
 
 class Circuit {

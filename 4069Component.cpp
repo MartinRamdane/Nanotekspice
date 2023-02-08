@@ -19,6 +19,7 @@ nts::SixNotComponent::SixNotComponent() : AComponent(14)
 
 nts::SixNotComponent::~SixNotComponent()
 {
+    nots.clear();
 }
 
 void nts::SixNotComponent::setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin)

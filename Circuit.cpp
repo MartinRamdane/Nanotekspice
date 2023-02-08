@@ -139,6 +139,8 @@ std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &typ
         return (std::make_unique<nts::FourTComponent<nts::XorComponent>>());
     if (type == "4069")
         return (std::make_unique<nts::SixNotComponent>());
+    if (type == "4008") // debug, to delete
+        return (std::make_unique<nts::FourAdderComponent>());
     return nullptr;
 }
 
