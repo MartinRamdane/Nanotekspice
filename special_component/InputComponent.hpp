@@ -14,11 +14,11 @@ namespace nts
 {
     class InputComponent : public AComponent {
         public:
-            InputComponent() : AComponent(1) {valueOuput[0] = Undefined;};
-            ~InputComponent() {};
+            InputComponent();
+            ~InputComponent();
 
-            nts::Tristate compute(std::size_t pin) {return valueOuput[pin - 1];};
-            void changeValue(Tristate targetValue) {valueOuput[0] = targetValue;};
+            nts::Tristate compute(std::size_t pin);
+            void changeValue(Tristate targetValue);
 
         protected:
         private:

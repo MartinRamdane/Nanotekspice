@@ -27,6 +27,8 @@ nts::AdderComponent::~AdderComponent()
 
 void nts::AdderComponent::setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin)
 {
+    if (pin < 1 || pin > 5)
+        throw Error("Invalid pin on Adder component.");
     switch (pin) {
         case 1:
             comps[0]->setLink(1, other, otherPin);
@@ -53,6 +55,8 @@ void nts::AdderComponent::setLink(std::size_t pin, nts::IComponent &other, std::
 
 nts::Tristate nts::AdderComponent::compute(std::size_t pin)
 {
+    if (pin < 1 || pin > 5)
+        throw Error("Invalid pin on Adder component.");
     switch (pin) {
         case 1: return comps[0]->compute(1);
         case 2: return comps[0]->compute(2);

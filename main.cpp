@@ -8,11 +8,11 @@ int main(int ac, char **av)
         Parser parser(av[1]);
         try {
             parser.parseFile(circuit);
+            circuit.mainLoop();
         } catch(std::exception &e) {
             std::cout << e.what() << std::endl;
             return 84;
         }
-        circuit.mainLoop();
     }
     return 0;
 }

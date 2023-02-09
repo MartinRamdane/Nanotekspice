@@ -9,6 +9,7 @@
     #define ICOMPONENT
 
 #include <iostream>
+#include <exception>
 
 namespace nts
 {
@@ -18,6 +19,16 @@ namespace nts
         False = false
     };
 
+    class Error: public std::exception {
+        public:
+            Error(const std::string msg) : _msg(msg) {};
+            ~Error(){};
+
+            const char *what() const noexcept override {return _msg.c_str();};
+
+        private:
+            std::string _msg;
+    };
     class IComponent {
         public :
             virtual ~IComponent() = default;

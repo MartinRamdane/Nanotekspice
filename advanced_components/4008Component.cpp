@@ -25,6 +25,8 @@ nts::FourAdderComponent::~FourAdderComponent()
 
 void nts::FourAdderComponent::setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin)
 {
+    if (pin < 1 || pin > 15 || pin == 8)
+        throw Error("Invalid pin on 4008 component.");
     switch (pin) {
         case 15: adders[3]->setLink(2, other, otherPin); break;
         case 1: adders[3]->setLink(1, other, otherPin); break;
@@ -47,6 +49,8 @@ void nts::FourAdderComponent::setLink(std::size_t pin, nts::IComponent &other, s
 
 nts::Tristate nts::FourAdderComponent::compute(std::size_t pin)
 {
+    if (pin < 1 || pin > 15 || pin == 8)
+        throw Error("Invalid pin on 4008 component.");
     switch (pin) {
         case 15: return adders[3]->compute(2);
         case 1: return adders[3]->compute(1);

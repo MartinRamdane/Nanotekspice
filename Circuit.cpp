@@ -19,22 +19,43 @@ Circuit::~Circuit()
 void Circuit::mainLoop()
 {
     std::string input;
+    bool inputIsFind = false;
     std::cout << "> ";
     while (std::getline (std::cin, input)) {
         if (input == "display")
             display();
-        if (input == "loop")
+        else if (input == "loop")
             loop();
-        if (input == "simulate")
+        else if (input == "simulate")
             simulate();
-        if (input.find("=") != std::string::npos) {
+        else if (input.find("=") != std::string::npos) {
             std::string target = input.substr(0, input.find("="));
+            for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
+                nts::InputComponent *castInput = dynamic_cast<nts::InputComponent *>(chipsets[it->first].get());
+                nts::ClockComponent *castclock = dynamic_cast<nts::ClockComponent *>(chipsets[it->first].get());
+                if ((castInput || castclock) && it->first == target)
+                    inputIsFind = true;
+            }
+            if (!inputIsFind) {
+                std::cout << ("Invalid value: " + target + " does not exist.") << std::endl;
+                std::cout << "> ";
+                continue;
+            }
+            inputIsFind = false;
             std::string val = input.substr(target.size() + 1);
+            val.erase(std::remove_if(val.begin(), val.end(), ::isspace), val.end());
+            if (val != "0" && val != "1" && val != "U") {
+                std::cout << ("Invalid value: " + val + " on " + target + " component.") << std::endl;
+                std::cout << "> ";
+                continue;
+            }
             nts::Tristate value = val == "U" ? nts::Undefined : (stoi(val) == 0 ? nts::False : nts::True);
             inputs[target] = value;
         }
-        if (input == "exit")
+        else if (input == "exit")
             break;
+        else
+            std::cout << "Invalid command." << std::endl;
         std::cout << "> ";
     }
 }
@@ -44,22 +65,19 @@ void Circuit::display()
     std::cout << "tick: " << tick << std::endl;
     std::cout << "input(s):" << std::endl;
     std::sort(inputsSorted.begin(), inputsSorted.end(), [](std::string a, std::string b) {return a<b;});
-    for (auto itInputs = inputsSorted.begin() ; itInputs != inputsSorted.end() ; ++itInputs) {
+    for (auto itInputs = inputsSorted.begin() ; itInputs != inputsSorted.end() ; ++itInputs)
         std::cout << "  " << *(itInputs) << ": " << chipsets[*itInputs]->compute(1) << std::endl;
-    }
     std::cout << "output(s):" << std::endl;
     std::sort(outputsSorted.begin(), outputsSorted.end(), [](std::string a, std::string b) {return a<b;});
-    for (auto itOutputs = outputsSorted.begin() ; itOutputs != outputsSorted.end() ; ++itOutputs) {
+    for (auto itOutputs = outputsSorted.begin() ; itOutputs != outputsSorted.end() ; ++itOutputs)
         std::cout << "  " << *(itOutputs) << ": " << chipsets[*itOutputs]->compute(1) << std::endl;
-    }
 }
 
 void Circuit::setChipsetsMap(std::string key, const std::string type)
 {
     for (auto it = chipsets.begin() ; it != chipsets.end(); ++it) {
-        if (it->first == key) {
+        if (it->first == key)
             throw Error("Same component name.");
-        }
     }
     chipsets[key] = createComponent(type);
 }
@@ -82,12 +100,10 @@ void Circuit::createLink(std::string source, std::string target)
     std::string srcName = source.substr(0, source.find(":"));
     std::string targetName = target.substr(0, target.find(":"));
     for (auto it = chipsets.begin() ; it != chipsets.end(); ++it) {
-        if (it->first == srcName) {
+        if (it->first == srcName)
             srcNameExists = true;
-        }
-        if (it->first == targetName) {
+        if (it->first == targetName)
             targetNameExists = true;
-        }
     }
     if (!srcNameExists)
         throw Error("Can\'t link component " + srcName + ": does not exist.");
@@ -101,9 +117,8 @@ void Circuit::createLink(std::string source, std::string target)
 
 std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &type)
 {
-    if (type.find(":") != std::string::npos) {
+    if (type.find(":") != std::string::npos)
         throw Error(".links is misplaced or not exists.");
-    }
     if (type == "false")
         return (std::make_unique<nts::FalseComponent>());
     if (type == "true")
@@ -144,9 +159,8 @@ void Circuit::assignValue()
         nts::ClockComponent *clock = dynamic_cast<nts::ClockComponent *>(chipsets[it->first].get());
         if (input)
             input->changeValue(it->second);
-        else if (clock) {
+        else if (clock)
             clock->changeValue(it->second);
-        }
     }
 }
 

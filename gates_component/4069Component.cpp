@@ -24,6 +24,8 @@ nts::SixNotComponent::~SixNotComponent()
 
 void nts::SixNotComponent::setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin)
 {
+    if (pin < 1 || pin > 13 || pin == 7)
+        throw Error("Invalid pin on Gate component.");
     if (pin % 2 == 0) {
         switch (pin) {
             case 2: nots[0].setLink(2, other, otherPin); break;
@@ -49,6 +51,8 @@ void nts::SixNotComponent::setLink(std::size_t pin, nts::IComponent &other, std:
 
 nts::Tristate nts::SixNotComponent::compute(std::size_t pin)
 {
+    if (pin < 1 || pin > 13 || pin == 7)
+        throw Error("Invalid pin on Gate component.");
     if (pin % 2 == 0) {
         switch (pin) {
             case 2: return nots[0].compute(2);

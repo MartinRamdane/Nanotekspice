@@ -26,6 +26,8 @@ namespace nts
             ~FourTComponent() {components.clear();};
 
             void setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin) override {
+                if (pin < 1 || pin > 13 || pin == 7)
+                    throw Error("Invalid pin on Gate component.");
                 if (pin == 3 || pin == 4 || pin == 10 || pin == 11) {
                     switch (pin) {
                         case 3: components[0].setLink(3, other, otherPin); break;
@@ -52,6 +54,8 @@ namespace nts
                 }
             };
             nts::Tristate compute(std::size_t pin) {
+                if (pin < 1 || pin > 13 || pin == 7)
+                    throw Error("Invalid pin on Gate component.");
                 if (pin == 3 || pin == 4 || pin == 10 || pin == 11) {
                     switch (pin) {
                         case 3: return components[0].compute(3);

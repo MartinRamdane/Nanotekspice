@@ -14,10 +14,10 @@ namespace nts
 {
     class OutpoutComponent : public AComponent {
         public:
-            OutpoutComponent() : AComponent(1) {};
-            ~OutpoutComponent() {};
+            OutpoutComponent();
+            ~OutpoutComponent();
 
-            nts::Tristate compute(std::size_t pin) {return pins[pin].targetComp->compute(pins[pin].targetPin);};
+            nts::Tristate compute(std::size_t pin);
 
         protected:
         private:
