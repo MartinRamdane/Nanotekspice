@@ -21,12 +21,8 @@ namespace nts {
             LoggerComponent();
             ~LoggerComponent();
 
-            // void setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin) override;
             nts::Tristate compute(std::size_t pin);
             int TristateToInt(nts::Tristate value);
-
-        private:
-            // std::vector<std::unique_ptr<nts::OutpoutComponent>> outputs;
     };
 }
 
