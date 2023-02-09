@@ -1,14 +1,12 @@
-#include <iostream>
-#include <memory>
-#include "FalseComponent.hpp"
-#include "TrueComponent.hpp"
-#include "NotComponent.hpp"
-#include "AndComponent.hpp"
-#include "InputComponent.hpp"
 #include "Circuit.hpp"
+#include "Parser.hpp"
 
 int main(int ac, char **av)
 {
-    if (ac > 1)
-        Circuit Circuit(av[1]);
+    if (ac > 1) {
+        Circuit circuit = Circuit();
+        Parser parser(av[1]);
+        parser.parseFile(circuit);
+        circuit.mainLoop();
+    }
 }

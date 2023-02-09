@@ -8,7 +8,7 @@
 #ifndef CLOCK
     #define CLOCK
 
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 namespace nts {
     class ClockComponent : public AComponent {
         public:

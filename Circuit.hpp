@@ -19,29 +19,28 @@
 #include <signal.h>
 #include <algorithm>
 #include "IComponent.hpp"
-#include "FalseComponent.hpp"
-#include "TrueComponent.hpp"
-#include "AndComponent.hpp"
-#include "OrComponent.hpp"
-#include "XorComponent.hpp"
-#include "NorComponent.hpp"
-#include "NandComponent.hpp"
-#include "InputComponent.hpp"
-#include "OutputComponent.hpp"
-#include "NotComponent.hpp"
-#include "ClockComponent.hpp"
-#include "XorComponent.hpp"
-#include "FourTComponent.hpp"
-#include "4069Component.hpp"
-#include "4008Component.hpp"
+#include "special_component/FalseComponent.hpp"
+#include "special_component/TrueComponent.hpp"
+#include "elementary_component/AndComponent.hpp"
+#include "elementary_component/OrComponent.hpp"
+#include "elementary_component/XorComponent.hpp"
+#include "elementary_component/NorComponent.hpp"
+#include "elementary_component/NandComponent.hpp"
+#include "special_component/InputComponent.hpp"
+#include "special_component/OutputComponent.hpp"
+#include "elementary_component/NotComponent.hpp"
+#include "special_component/ClockComponent.hpp"
+#include "elementary_component/XorComponent.hpp"
+#include "gates_component/FourTComponent.hpp"
+#include "gates_component/4069Component.hpp"
+#include "advanced_components/4008Component.hpp"
 
 
 class Circuit {
     public:
-        Circuit(const std::string filename);
+        Circuit();
         ~Circuit();
 
-        void parseFile(const std::string filename);
         void createLink(std::string source, std::string target);
         void display();
         void assignValue(); // only for input and clocks
@@ -49,6 +48,9 @@ class Circuit {
         void mainLoop();
         void loop();
         std::unique_ptr<nts::IComponent> createComponent(const std::string &type);
+        void setChipsetsMap(std::string key, const std::string type);
+        void setInputsList(std::string value);
+        void setOutputsList(std::string value);
 
     private:
         std::map<std::string, std::unique_ptr<nts::IComponent>> chipsets;

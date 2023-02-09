@@ -5,18 +5,18 @@
 ** AndComponent
 */
 
-#ifndef AND_COMPONENT
-    #define AND_COMPONENT
+#ifndef NAND_COMPONENT
+    #define NAND_COMPONENT
 
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 #include <iostream>
 
 namespace nts
 {
-    class AndComponent: public nts::AComponent {
+    class NandComponent: public nts::AComponent {
         public:
-            AndComponent() : AComponent(3) {};
-            ~AndComponent() {};
+            NandComponent() : AComponent(3) {};
+            ~NandComponent() {};
 
             nts::Tristate compute(std::size_t pin);
     };

@@ -8,10 +8,10 @@
 #ifndef FOUR_BITS_ADDER
     #define FOUR_BITS_ADDER
 
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 #include <iostream>
 #include <memory>
-#include "IComponent.hpp"
+#include "../IComponent.hpp"
 #include "AdderComponent.hpp"
 
 namespace nts

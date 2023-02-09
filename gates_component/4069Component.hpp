@@ -8,10 +8,10 @@
 #ifndef SIXNOT_COMPONENT
     #define SIXNOT_COMPONENT
 
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 #include <iostream>
 #include <memory>
-#include "NotComponent.hpp"
+#include "../elementary_component/NotComponent.hpp"
 
 namespace nts
 {

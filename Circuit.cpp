@@ -7,11 +7,9 @@
 
 #include "Circuit.hpp"
 
-Circuit::Circuit(const std::string filename)
+Circuit::Circuit()
 {
     tick = 0;
-    parseFile(filename);
-    mainLoop();
 }
 
 Circuit::~Circuit()
@@ -56,48 +54,21 @@ void Circuit::display()
     }
 }
 
-void Circuit::parseFile(const std::string filename)
+void Circuit::setChipsetsMap(std::string key, const std::string type)
 {
-    std::ifstream file(filename.c_str());
-    if (!file.is_open()) {
-        std::cout << "erro opening file" << std::endl;
-        return;
-    }
-    std::string line;
-    bool chip = false;
-    bool link = false;
-    while(getline(file, line)) {
-        if (line.size() == 0)
-            continue;
-        if (line.c_str()[0] == '#')
-            continue;
-        std::istringstream iss(line);
-        std::string word;
-        std::vector<std::string> tab;
-        while(iss >> word)
-            tab.push_back(word);
-        if (chip && tab[0] != ".links:") {
-            chipsets[tab[1]] = createComponent(tab[0]);
-            if (tab[0] == "input" || tab[0] == "clock")
-                inputsSorted.push_back(tab[1]);
-            if (tab[0] == "output")
-                outputsSorted.push_back(tab[1]);
-         }
-        if (link)
-            createLink(tab[0], tab[1]);
-        if (tab[0] == ".chipsets:") {
-            chip = true; link = false;
-        }
-        if (tab[0] == ".links:") {
-            link = true;
-            chip = false;
-        }
-    }
-    // for(auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
-    //     std::cout << "key: " << it->first << " ";
-    //     std::cout << "value :" << it->second << std::endl;
-    // }
+    chipsets[key] = createComponent(type);
 }
+
+void Circuit::setInputsList(std::string value)
+{
+    inputsSorted.push_back(value);
+}
+
+void Circuit::setOutputsList(std::string value)
+{
+    outputsSorted.push_back(value);
+}
+
 
 void Circuit::createLink(std::string source, std::string target)
 {
@@ -139,7 +110,7 @@ std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &typ
         return (std::make_unique<nts::FourTComponent<nts::XorComponent>>());
     if (type == "4069")
         return (std::make_unique<nts::SixNotComponent>());
-    if (type == "4008") // debug, to delete
+    if (type == "4008")
         return (std::make_unique<nts::FourAdderComponent>());
     return nullptr;
 }

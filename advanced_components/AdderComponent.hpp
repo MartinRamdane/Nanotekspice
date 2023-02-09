@@ -8,13 +8,12 @@
 #ifndef ADDER_COMPONENT
     #define ADDER_COMPONENT
 
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 #include <iostream>
 #include <memory>
-#include "IComponent.hpp"
-#include "XorComponent.hpp"
-#include "AndComponent.hpp"
-#include "OrComponent.hpp"
+#include "../elementary_component/XorComponent.hpp"
+#include "../elementary_component/AndComponent.hpp"
+#include "../elementary_component/OrComponent.hpp"
 
 namespace nts
 {

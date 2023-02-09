@@ -9,7 +9,7 @@
     #define NOR_COMPONENT
 
 #include <iostream>
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 
 namespace nts
 {

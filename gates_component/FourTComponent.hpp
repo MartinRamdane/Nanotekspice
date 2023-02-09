@@ -8,7 +8,7 @@
 #ifndef FOUR_T_COMPONENT
     #define FOUR_T_COMPONENT
 
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 #include <iostream>
 #include <memory>
 

@@ -7,7 +7,11 @@
 
 NAME = nanotekspice
 
-SRC = *.cpp
+SRC = *.cpp \
+	advanced_components/*.cpp  \
+	elementary_component/*.cpp \
+	gates_component/*.cpp \
+	special_component/*.cpp \
 
 FLAGS = -std=c++20 -Wall -Wextra -Werror -g3
 

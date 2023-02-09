@@ -8,7 +8,7 @@
 #ifndef NOT_COMPONENT
     #define NOT_COMPONENT
 
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 #include <iostream>
 
 namespace nts

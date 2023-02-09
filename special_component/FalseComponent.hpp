@@ -8,7 +8,7 @@
 #ifndef FALSE_COMPONENT
     #define FALSE_COMPONENT
 
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 #include <iostream>
 
 namespace nts

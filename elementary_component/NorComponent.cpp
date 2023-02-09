@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2023
 ** NorComponent.cpp
 ** File description:
-** NorComponent
+** NorComponent cc
 */
 
 #include "NorComponent.hpp"

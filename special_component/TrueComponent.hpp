@@ -8,7 +8,7 @@
 #ifndef TRUE_COMPONENT
     #define TRUE_COMPONENT
 
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 #include <iostream>
 
 namespace nts

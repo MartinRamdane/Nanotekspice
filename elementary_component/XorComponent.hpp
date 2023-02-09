@@ -8,7 +8,7 @@
 #ifndef XOR_COMPONENT
     #define XOR_COMPONENT
 
-#include "AComponent.hpp"
+#include "../AComponent.hpp"
 #include <iostream>
 
 namespace nts
