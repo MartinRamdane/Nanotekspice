@@ -149,6 +149,8 @@ std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &typ
         return (std::make_unique<nts::SixNotComponent>());
     if (type == "4008")
         return (std::make_unique<nts::FourAdderComponent>());
+    if (type == "logger")
+        return (std::make_unique<nts::LoggerComponent>());
     throw Error("Type " + type + " is not defined.");
 }
 
@@ -170,6 +172,9 @@ void Circuit::simulate()
     assignValue();
     for (auto it = chipsets.begin() ; it != chipsets.end(); ++it) {
         nts::ClockComponent *clock = dynamic_cast<nts::ClockComponent *>(chipsets[it->first].get());
+        nts::LoggerComponent *logger = dynamic_cast<nts::LoggerComponent *>(chipsets[it->first].get());
+        if (logger)
+            (it->second)->compute(1);
         if (clock) {
             if (inputs.find(it->first) != inputs.end())
                 inputs.erase(it->first);

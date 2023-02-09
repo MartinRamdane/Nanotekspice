@@ -35,6 +35,7 @@
 #include "gates_component/FourTComponent.hpp"
 #include "gates_component/4069Component.hpp"
 #include "advanced_components/4008Component.hpp"
+#include "advanced_components/LoggerComponent.hpp"
 
 
 class Circuit {
