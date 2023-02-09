@@ -19,10 +19,10 @@ Parser::~Parser()
 void Parser::parseFile(Circuit &circuit)
 {
     std::ifstream file(_filename.c_str());
-    if (!file.is_open()) {
-        std::cout << "error opening file" << std::endl;
-        exit(84);
-    }
+    if (!file.is_open())
+        throw Error("Error to open " + _filename + " file.");
+    if (file.peek() == std::ifstream::traits_type::eof())
+        throw Error("Empty file");
     std::string line;
     bool chip = false;
     bool link = false;
@@ -37,12 +37,14 @@ void Parser::parseFile(Circuit &circuit)
         while(iss >> word)
             tab.push_back(word);
         if (chip && tab[0] != ".links:") {
+            if (tab.size() > 2)
+                throw Error("Bad informations on Chipset.");
             circuit.setChipsetsMap(tab[1], tab[0]);
             if (tab[0] == "input" || tab[0] == "clock")
                 circuit.setInputsList(tab[1]);
             if (tab[0] == "output")
                circuit.setOutputsList(tab[1]);
-         }
+        }
         if (link)
             circuit.createLink(tab[0], tab[1]);
         if (tab[0] == ".chipsets:") {
@@ -53,4 +55,6 @@ void Parser::parseFile(Circuit &circuit)
             chip = false;
         }
     }
+    if (circuit.getChipsetsMapSize() == 0)
+        throw Error("No chipsets in the circuit.");
 }

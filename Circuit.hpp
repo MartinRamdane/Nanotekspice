@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <algorithm>
+#include <exception>
 #include "IComponent.hpp"
 #include "special_component/FalseComponent.hpp"
 #include "special_component/TrueComponent.hpp"
@@ -38,6 +39,16 @@
 
 class Circuit {
     public:
+        class Error: public std::exception {
+            public:
+                Error(const std::string msg) : _msg(msg) {};
+                ~Error(){};
+
+                const char *what() const noexcept override {return _msg.c_str();};
+            private:
+                std::string _msg;
+        };
+
         Circuit();
         ~Circuit();
 
@@ -51,6 +62,8 @@ class Circuit {
         void setChipsetsMap(std::string key, const std::string type);
         void setInputsList(std::string value);
         void setOutputsList(std::string value);
+        size_t getChipsetsMapSize() {return chipsets.size();};
+
 
     private:
         std::map<std::string, std::unique_ptr<nts::IComponent>> chipsets;

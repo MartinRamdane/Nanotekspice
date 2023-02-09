@@ -56,6 +56,11 @@ void Circuit::display()
 
 void Circuit::setChipsetsMap(std::string key, const std::string type)
 {
+    for (auto it = chipsets.begin() ; it != chipsets.end(); ++it) {
+        if (it->first == key) {
+            throw Error("Same component name.");
+        }
+    }
     chipsets[key] = createComponent(type);
 }
 
@@ -72,9 +77,23 @@ void Circuit::setOutputsList(std::string value)
 
 void Circuit::createLink(std::string source, std::string target)
 {
+    bool srcNameExists = false;
+    bool targetNameExists = false;
     std::string srcName = source.substr(0, source.find(":"));
-    int srcPin = stoi(source.substr(srcName.size() + 1));
     std::string targetName = target.substr(0, target.find(":"));
+    for (auto it = chipsets.begin() ; it != chipsets.end(); ++it) {
+        if (it->first == srcName) {
+            srcNameExists = true;
+        }
+        if (it->first == targetName) {
+            targetNameExists = true;
+        }
+    }
+    if (!srcNameExists)
+        throw Error("Can\'t link component " + srcName + ": does not exist.");
+    if (!targetNameExists)
+        throw Error("Can\'t link component " + targetName + ": does not exist.");
+    int srcPin = stoi(source.substr(srcName.size() + 1));
     int targetPin = stoi(target.substr(targetName.size() + 1));
     chipsets[targetName]->setLink(targetPin, *(chipsets[srcName].get()), srcPin);
     chipsets[srcName]->setLink(srcPin, *(chipsets[targetName]), targetPin);
@@ -82,6 +101,9 @@ void Circuit::createLink(std::string source, std::string target)
 
 std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &type)
 {
+    if (type.find(":") != std::string::npos) {
+        throw Error(".links is misplaced or not exists.");
+    }
     if (type == "false")
         return (std::make_unique<nts::FalseComponent>());
     if (type == "true")
@@ -112,7 +134,7 @@ std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &typ
         return (std::make_unique<nts::SixNotComponent>());
     if (type == "4008")
         return (std::make_unique<nts::FourAdderComponent>());
-    return nullptr;
+    throw Error("Type " + type + " is not defined.");
 }
 
 void Circuit::assignValue()
