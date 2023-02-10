@@ -1,5 +1,6 @@
 #include "Circuit.hpp"
 #include "Parser.hpp"
+#include "Commands.hpp"
 
 int main(int ac, char **av)
 {
@@ -9,7 +10,8 @@ int main(int ac, char **av)
             parser.parseFile();
             nts::Circuit circuit(parser.getNbPins());
             parser.createCircuit(circuit);
-            circuit.mainLoop();
+            Commands commands(circuit);
+            commands.mainLoop();
         } catch(std::exception &e) {
             std::cout << e.what() << std::endl;
             return 84;

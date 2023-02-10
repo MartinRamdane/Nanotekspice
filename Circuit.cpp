@@ -18,46 +18,6 @@ Circuit::~Circuit()
 {
 }
 
-void Circuit::mainLoop()
-{
-    std::string input;
-    bool inputIsFind = false;
-    std::cout << "> ";
-    while (std::getline (std::cin, input)) {
-        if (input == "display")
-            display();
-        else if (input == "loop")
-            loop();
-        else if (input == "simulate")
-            simulate();
-        else if (input.find("=") != std::string::npos) {
-            std::string target = input.substr(0, input.find("="));
-            for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
-                nts::InputComponent *castInput = dynamic_cast<nts::InputComponent *>(chipsets[it->first].get());
-                nts::ClockComponent *castclock = dynamic_cast<nts::ClockComponent *>(chipsets[it->first].get());
-                if ((castInput || castclock) && it->first == target)
-                    inputIsFind = true;
-            }
-            if (!inputIsFind) {
-                std::cout << "> ";
-                continue;
-            }
-            inputIsFind = false;
-            std::string val = input.substr(target.size() + 1);
-            val.erase(std::remove_if(val.begin(), val.end(), ::isspace), val.end());
-            if (val != "0" && val != "1" && val != "U") {
-                std::cout << "> ";
-                continue;
-            }
-            nts::Tristate value = val == "U" ? nts::Undefined : (stoi(val) == 0 ? nts::False : nts::True);
-            assignValue(target, value);
-        }
-        else if (input == "exit")
-            break;
-        std::cout << "> ";
-    }
-}
-
 nts::Tristate Circuit::compute(std::size_t pin)
 {
     for (auto itInputs = inputsSorted.begin() ; itInputs != inputsSorted.end() ; ++itInputs) {
@@ -73,13 +33,15 @@ nts::Tristate Circuit::compute(std::size_t pin)
     return Undefined;
 }
 
-void Circuit::display()
+void Circuit::displayInputsComponent()
 {
-    std::cout << "tick: " << tick << std::endl;
-    std::cout << "input(s):" << std::endl;
+
     for (auto itInputs = inputsSorted.begin() ; itInputs != inputsSorted.end() ; ++itInputs)
         std::cout << "  " << (itInputs->first) << ": " << compute(itInputs->second) << std::endl;
-    std::cout << "output(s):" << std::endl;
+}
+
+void Circuit::displayOutputsComponent()
+{
     for (auto itOutputs = outputsSorted.begin() ; itOutputs != outputsSorted.end() ; ++itOutputs)
         std::cout << "  " << (itOutputs->first) << ": " << compute(itOutputs->second) << std::endl;
 }
@@ -144,36 +106,41 @@ std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &typ
     return dico[type]();
 }
 
-void Circuit::assignValue(const std::string name, nts::Tristate value)
+int Circuit::assignValue(const std::string input)
 {
-    nts::InputComponent *input = dynamic_cast<nts::InputComponent *>(chipsets[name].get());
-    nts::ClockComponent *clock = dynamic_cast<nts::ClockComponent *>(chipsets[name].get());
-    if (input)
-        input->changeValue(value);
-    else if (clock)
-        clock->changeValue(value);
+    bool inputIsFind = false;
+    std::string target = input.substr(0, input.find("="));
+    for (auto it = chipsets.begin() ; it != chipsets.end() ; ++it) {
+        nts::InputComponent *castInput = dynamic_cast<nts::InputComponent *>(chipsets[it->first].get());
+        nts::ClockComponent *castclock = dynamic_cast<nts::ClockComponent *>(chipsets[it->first].get());
+        if ((castInput || castclock) && it->first == target)
+            inputIsFind = true;
+    }
+    if (!inputIsFind) {
+        std::cout << "> ";
+        return 1;
+    }
+    inputIsFind = false;
+    std::string val = input.substr(target.size() + 1);
+    val.erase(std::remove_if(val.begin(), val.end(), ::isspace), val.end());
+    if (val != "0" && val != "1" && val != "U") {
+        std::cout << "> ";
+        return 1;
+    }
+    nts::Tristate value = val == "U" ? nts::Undefined : (stoi(val) == 0 ? nts::False : nts::True);
+    nts::InputComponent *inputCast = dynamic_cast<nts::InputComponent *>(chipsets[target].get());
+    nts::ClockComponent *clockCast = dynamic_cast<nts::ClockComponent *>(chipsets[target].get());
+    if (inputCast)
+        inputCast->changeValue(value);
+    else if (clockCast)
+        clockCast->changeValue(value);
+    return 0;
 }
 
-void Circuit::simulate()
+void Circuit::simulate(std::size_t tick)
 {
-    tick += 1;
     for (auto it = chipsets.begin() ; it != chipsets.end(); ++it)
         (it->second)->simulate(tick);
-}
-
-volatile sig_atomic_t stopLoop;
-
-void checkIfSig(int signum) {
-    if (signum == SIGINT)
-        stopLoop = 1;
-}
-
-void Circuit::loop() {
-    while (stopLoop != 1) {
-        signal(SIGINT, checkIfSig);
-        simulate();
-        display();
-    }
 }
 
 std::map<std::string, std::function<std::unique_ptr<IComponent>()>> Circuit::dico = {

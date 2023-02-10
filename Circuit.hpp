@@ -55,11 +55,10 @@ namespace nts
             ~Circuit();
 
             void createLink(std::string source, std::string target);
-            void display();
-            void assignValue(const std::string name, nts::Tristate value);
-            void simulate();
-            void mainLoop();
-            void loop();
+            void displayInputsComponent();
+            void displayOutputsComponent();
+            int assignValue(const std::string input);
+            void simulate(std::size_t tick) override;
             nts::Tristate compute(std::size_t pin);
             std::unique_ptr<nts::IComponent> createComponent(const std::string &type, size_t pin, std::string name);
             void setChipsetsMap(std::string key, const std::string type, size_t pin);
