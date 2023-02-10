@@ -39,7 +39,6 @@ void Circuit::mainLoop()
                     inputIsFind = true;
             }
             if (!inputIsFind) {
-                std::cout << ("Invalid value: " + target + " does not exist.") << std::endl;
                 std::cout << "> ";
                 continue;
             }
@@ -47,7 +46,6 @@ void Circuit::mainLoop()
             std::string val = input.substr(target.size() + 1);
             val.erase(std::remove_if(val.begin(), val.end(), ::isspace), val.end());
             if (val != "0" && val != "1" && val != "U") {
-                std::cout << ("Invalid value: " + val + " on " + target + " component.") << std::endl;
                 std::cout << "> ";
                 continue;
             }
@@ -56,8 +54,6 @@ void Circuit::mainLoop()
         }
         else if (input == "exit")
             break;
-        else
-            std::cout << "Invalid command." << std::endl;
         std::cout << "> ";
     }
 }
@@ -137,45 +133,15 @@ std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &typ
 {
     if (type.find(":") != std::string::npos)
         throw Error(".links is misplaced or not exists.");
-    if (type == "false")
-        return (std::make_unique<nts::FalseComponent>());
-    if (type == "true")
-        return (std::make_unique<nts::TrueComponent>());
-    if (type == "and")
-        return (std::make_unique<nts::AndComponent>());
-    if (type == "not")
-        return (std::make_unique<nts::NotComponent>());
-    if (type == "input") {
+    if (dico.find(type) == dico.end())
+        throw Error("Unknown component.");
+    if (type == "input")
         inputsSorted[name] = pin;
-        return (std::make_unique<nts::InputComponent>());
-    }
-    if (type == "output") {
+    if (type == "output")
         outputsSorted[name] = pin;
-        return (std::make_unique<nts::OutpoutComponent>());
-    }
-    if (type == "xor")
-        return (std::make_unique<nts::XorComponent>());
-    if (type == "clock") {
+    if (type == "clock")
         inputsSorted[name] = pin;
-        return (std::make_unique<nts::ClockComponent>());
-    }
-    if (type == "4001")
-        return (std::make_unique<nts::FourTComponent<nts::NorComponent>>());
-    if (type == "4011")
-        return (std::make_unique<nts::FourTComponent<nts::NandComponent>>());
-    if (type == "4081")
-        return (std::make_unique<nts::FourTComponent<nts::AndComponent>>());
-    if (type == "4071")
-        return (std::make_unique<nts::FourTComponent<nts::OrComponent>>());
-    if (type == "4030")
-        return (std::make_unique<nts::FourTComponent<nts::XorComponent>>());
-    if (type == "4069")
-        return (std::make_unique<nts::SixNotComponent>());
-    if (type == "4008")
-        return (std::make_unique<nts::FourAdderComponent>());
-    if (type == "logger")
-        return (std::make_unique<nts::LoggerComponent>());
-    throw Error("Type " + type + " is not defined.");
+    return dico[type]();
 }
 
 void Circuit::assignValue(const std::string name, nts::Tristate value)
@@ -209,3 +175,22 @@ void Circuit::loop() {
         display();
     }
 }
+
+std::map<std::string, std::function<std::unique_ptr<IComponent>()>> Circuit::dico = {
+    { "false", [](){ return (std::make_unique<nts::FalseComponent>());}},
+    { "true", [](){ return (std::make_unique<nts::TrueComponent>());}},
+    { "and", [](){ return (std::make_unique<nts::AndComponent>());}},
+    { "not", [](){ return (std::make_unique<nts::NotComponent>());}},
+    { "xor", [](){ return (std::make_unique<nts::XorComponent>());}},
+    { "input", [](){ return (std::make_unique<nts::InputComponent>());}},
+    { "output", [](){ return (std::make_unique<nts::OutpoutComponent>());}},
+    { "clock", [](){ return (std::make_unique<nts::ClockComponent>());}},
+    { "4001", [](){ return (std::make_unique<nts::FourTComponent<nts::NorComponent>>());}},
+    { "4011", [](){ return (std::make_unique<nts::FourTComponent<nts::NandComponent>>());}},
+    { "4081", [](){ return (std::make_unique<nts::FourTComponent<nts::AndComponent>>());}},
+    { "4071", [](){ return (std::make_unique<nts::FourTComponent<nts::OrComponent>>());}},
+    { "4030", [](){ return (std::make_unique<nts::FourTComponent<nts::XorComponent>>());}},
+    { "4069", [](){ return (std::make_unique<nts::SixNotComponent>());}},
+    { "4008", [](){ return (std::make_unique<nts::FourAdderComponent>());}},
+    { "logger", [](){ return (std::make_unique<nts::LoggerComponent>());}}
+};

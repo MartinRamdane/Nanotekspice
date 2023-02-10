@@ -69,6 +69,7 @@ namespace nts
             std::map<std::string, nts::Tristate> inputs;
             std::map<std::string, size_t> inputsSorted;
             std::map<std::string, size_t> outputsSorted;
+            static std::map<std::string, std::function<std::unique_ptr<IComponent>()>> dico;
             int tick;
     };
 }
