@@ -15,6 +15,12 @@ nts::LoggerComponent::~LoggerComponent()
 {
 }
 
+void nts::LoggerComponent::simulate(std::size_t tick)
+{
+    if (tick > 0)
+        compute(1);
+}
+
 nts::Tristate nts::LoggerComponent::compute(std::size_t pin)
 {
     if (pin < 1 || pin > 10)

@@ -19,10 +19,12 @@ namespace nts
 
             nts::Tristate compute(std::size_t pin);
             void changeValue(Tristate targetValue);
+            void simulate(std::size_t tick) override;
 
         protected:
         private:
             Tristate valueOuput[1];
+            Tristate nextValue;
     };
 }
 

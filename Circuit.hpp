@@ -37,42 +37,41 @@
 #include "advanced_components/4008Component.hpp"
 #include "advanced_components/LoggerComponent.hpp"
 
+namespace nts
+{
+    class Circuit: public AComponent {
+        public:
+            class Error: public std::exception {
+                public:
+                    Error(const std::string msg) : _msg(msg) {};
+                    ~Error(){};
 
-class Circuit {
-    public:
-        class Error: public std::exception {
-            public:
-                Error(const std::string msg) : _msg(msg) {};
-                ~Error(){};
+                    const char *what() const noexcept override {return _msg.c_str();};
+                private:
+                    std::string _msg;
+            };
 
-                const char *what() const noexcept override {return _msg.c_str();};
-            private:
-                std::string _msg;
-        };
+            Circuit(size_t nbPins = 2);
+            ~Circuit();
 
-        Circuit();
-        ~Circuit();
+            void createLink(std::string source, std::string target);
+            void display();
+            void assignValue(const std::string name, nts::Tristate value);
+            void simulate();
+            void mainLoop();
+            void loop();
+            nts::Tristate compute(std::size_t pin);
+            std::unique_ptr<nts::IComponent> createComponent(const std::string &type, size_t pin, std::string name);
+            void setChipsetsMap(std::string key, const std::string type, size_t pin);
 
-        void createLink(std::string source, std::string target);
-        void display();
-        void assignValue(); // only for input and clocks
-        void simulate();
-        void mainLoop();
-        void loop();
-        std::unique_ptr<nts::IComponent> createComponent(const std::string &type);
-        void setChipsetsMap(std::string key, const std::string type);
-        void setInputsList(std::string value);
-        void setOutputsList(std::string value);
-        size_t getChipsetsMapSize() {return chipsets.size();};
-
-
-    private:
-        std::map<std::string, std::unique_ptr<nts::IComponent>> chipsets;
-        std::map<std::string, nts::Tristate> inputs;
-        std::vector<std::string> inputsSorted;
-        std::vector<std::string> outputsSorted;
-        int tick;
-};
+        private:
+            std::map<std::string, std::unique_ptr<nts::IComponent>> chipsets;
+            std::map<std::string, nts::Tristate> inputs;
+            std::map<std::string, size_t> inputsSorted;
+            std::map<std::string, size_t> outputsSorted;
+            int tick;
+    };
+}
 
 std::ostream &operator<<( std :: ostream & s , nts :: Tristate v );
 

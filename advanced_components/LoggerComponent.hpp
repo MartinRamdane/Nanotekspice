@@ -22,6 +22,7 @@ namespace nts {
             ~LoggerComponent();
 
             nts::Tristate compute(std::size_t pin);
+            void simulate(std::size_t tick);
             int TristateToInt(nts::Tristate value);
     };
 }

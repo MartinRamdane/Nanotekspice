@@ -31,9 +31,13 @@ void AComponent::setLink(std::size_t pin, IComponent &other, std::size_t otherPi
     pins[pin].targetComp = &other;
 }
 
-AComponent::pinInfo AComponent::getLink(std::size_t pin) const
+nts::Tristate AComponent::getLink(std::size_t pin) const
 {
-    return (pins.at(pin));
+    if (pin > pins.size())
+        throw Error("Invalid pin on GetLink method.");
+    if (!pins[pin].targetComp)
+        throw Error("Pin not link.");
+    return (pins[pin].targetComp->compute(pin));
 }
 
 std::ostream &operator<<( std :: ostream & s , nts :: Tristate v )

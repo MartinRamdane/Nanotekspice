@@ -12,8 +12,8 @@
 namespace nts {
     class ClockComponent : public AComponent {
         public:
-            ClockComponent() : AComponent(1) {valueOutput[0] = Undefined;};
-            ~ClockComponent() {}
+            ClockComponent();
+            ~ClockComponent();
 
             nts::Tristate compute(std::size_t pin) {return valueOutput[pin - 1];};
             void changeValue(nts::Tristate value = Undefined);
@@ -22,6 +22,8 @@ namespace nts {
         protected:
         private:
             Tristate valueOutput[1];
+            Tristate nextValue;
+            bool haveToAssign;
     };
 }
 

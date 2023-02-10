@@ -16,7 +16,7 @@ Parser::~Parser()
 {
 }
 
-void Parser::parseFile(Circuit &circuit)
+void Parser::parseFile()
 {
     std::ifstream file(_filename.c_str());
     if (!file.is_open())
@@ -26,7 +26,6 @@ void Parser::parseFile(Circuit &circuit)
     std::string line;
     bool chip = false;
     bool link = false;
-    bool hasLinks = false;
     while(getline(file, line)) {
         if (line.size() == 0)
             continue;
@@ -40,17 +39,14 @@ void Parser::parseFile(Circuit &circuit)
         if (chip && tab[0] != ".links:") {
             if (tab.size() > 2)
                 throw Error("Invalid informations on Chipset.");
-            circuit.setChipsetsMap(tab[1], tab[0]);
-            if (tab[0] == "input" || tab[0] == "clock")
-                circuit.setInputsList(tab[1]);
-            if (tab[0] == "output")
-               circuit.setOutputsList(tab[1]);
+            if (tab[0] == "input" || tab[0] == "clock" || tab[0] == "output")
+                _nbPins++;
+            _chipsets.push_back(tab);
         }
         if (link) {
-            hasLinks = true;
             if (tab.size() > 2)
                 throw Error("Invalid informations on links.");
-            circuit.createLink(tab[0], tab[1]);
+            _links.push_back(tab);
         }
         if (tab[0] == ".chipsets:") {
             chip = true;
@@ -61,8 +57,20 @@ void Parser::parseFile(Circuit &circuit)
             chip = false;
         }
     }
-    if (!hasLinks)
+    if (_links.size() == 0)
         throw Error("There are no links.");
-    if (circuit.getChipsetsMapSize() == 0)
+    if (_chipsets.size() == 0)
         throw Error("No chipsets in the circuit.");
+}
+
+void Parser::createCircuit(nts::Circuit &circuit)
+{
+    size_t size = 1;
+    for (auto chipset: _chipsets) {
+        circuit.setChipsetsMap(chipset[1], chipset[0], size);
+        if (chipset[0] == "output" || chipset[0] == "input" || chipset[0] == "clock")
+            size += 1;
+    }
+    for (auto link: _links)
+        circuit.createLink(link[0], link[1]);
 }

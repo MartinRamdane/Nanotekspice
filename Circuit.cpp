@@ -7,7 +7,9 @@
 
 #include "Circuit.hpp"
 
-Circuit::Circuit()
+using namespace nts;
+
+Circuit::Circuit(size_t nbPins) : AComponent(nbPins)
 {
     tick = 0;
 }
@@ -50,7 +52,7 @@ void Circuit::mainLoop()
                 continue;
             }
             nts::Tristate value = val == "U" ? nts::Undefined : (stoi(val) == 0 ? nts::False : nts::True);
-            inputs[target] = value;
+            assignValue(target, value);
         }
         else if (input == "exit")
             break;
@@ -60,38 +62,40 @@ void Circuit::mainLoop()
     }
 }
 
+nts::Tristate Circuit::compute(std::size_t pin)
+{
+    for (auto itInputs = inputsSorted.begin() ; itInputs != inputsSorted.end() ; ++itInputs) {
+        if (itInputs->second == pin) {
+            return chipsets[itInputs->first]->compute(1);
+        }
+    }
+    for (auto itOutputs = outputsSorted.begin() ; itOutputs != outputsSorted.end() ; ++itOutputs) {
+        if (itOutputs->second == pin) {
+            return chipsets[itOutputs->first]->compute(1);
+        }
+    }
+    return Undefined;
+}
+
 void Circuit::display()
 {
     std::cout << "tick: " << tick << std::endl;
     std::cout << "input(s):" << std::endl;
-    std::sort(inputsSorted.begin(), inputsSorted.end(), [](std::string a, std::string b) {return a<b;});
     for (auto itInputs = inputsSorted.begin() ; itInputs != inputsSorted.end() ; ++itInputs)
-        std::cout << "  " << *(itInputs) << ": " << chipsets[*itInputs]->compute(1) << std::endl;
+        std::cout << "  " << (itInputs->first) << ": " << compute(itInputs->second) << std::endl;
     std::cout << "output(s):" << std::endl;
-    std::sort(outputsSorted.begin(), outputsSorted.end(), [](std::string a, std::string b) {return a<b;});
     for (auto itOutputs = outputsSorted.begin() ; itOutputs != outputsSorted.end() ; ++itOutputs)
-        std::cout << "  " << *(itOutputs) << ": " << chipsets[*itOutputs]->compute(1) << std::endl;
+        std::cout << "  " << (itOutputs->first) << ": " << compute(itOutputs->second) << std::endl;
 }
 
-void Circuit::setChipsetsMap(std::string key, const std::string type)
+void Circuit::setChipsetsMap(std::string key, const std::string type, size_t pin)
 {
     for (auto it = chipsets.begin() ; it != chipsets.end(); ++it) {
         if (it->first == key)
             throw Error("Same component name.");
     }
-    chipsets[key] = createComponent(type);
+    chipsets[key] = createComponent(type, pin, key);
 }
-
-void Circuit::setInputsList(std::string value)
-{
-    inputsSorted.push_back(value);
-}
-
-void Circuit::setOutputsList(std::string value)
-{
-    outputsSorted.push_back(value);
-}
-
 
 void Circuit::createLink(std::string source, std::string target)
 {
@@ -109,13 +113,27 @@ void Circuit::createLink(std::string source, std::string target)
         throw Error("Can\'t link component " + srcName + ": does not exist.");
     if (!targetNameExists)
         throw Error("Can\'t link component " + targetName + ": does not exist.");
-    int srcPin = stoi(source.substr(srcName.size() + 1));
     int targetPin = stoi(target.substr(targetName.size() + 1));
+    int srcPin = stoi(source.substr(srcName.size() + 1));
+    if (inputsSorted.find(srcName) != inputsSorted.end()) {
+        setLink(inputsSorted[srcName], *(chipsets[targetName]), targetPin);
+        chipsets[targetName]->setLink(targetPin, *this, inputsSorted[srcName]);
+    } else if (inputsSorted.find(targetName) != inputsSorted.end()) {
+        setLink(inputsSorted[targetName], *(chipsets[srcName]), srcPin);
+        chipsets[srcName]->setLink(srcPin, *this, inputsSorted[targetName]);
+    }
+    if (outputsSorted.find(srcName) != outputsSorted.end()) {
+        setLink(outputsSorted[srcName], *(chipsets[targetName]), targetPin);
+        chipsets[targetName]->setLink(targetPin, *this, outputsSorted[srcName]);
+    } else if (outputsSorted.find(targetName) != outputsSorted.end()) {
+        setLink(outputsSorted[targetName], *(chipsets[srcName]), srcPin);
+        chipsets[srcName]->setLink(srcPin, *this, outputsSorted[targetName]);
+    }
     chipsets[targetName]->setLink(targetPin, *(chipsets[srcName].get()), srcPin);
     chipsets[srcName]->setLink(srcPin, *(chipsets[targetName]), targetPin);
 }
 
-std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &type)
+std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &type, size_t pin, std::string name)
 {
     if (type.find(":") != std::string::npos)
         throw Error(".links is misplaced or not exists.");
@@ -127,14 +145,20 @@ std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &typ
         return (std::make_unique<nts::AndComponent>());
     if (type == "not")
         return (std::make_unique<nts::NotComponent>());
-    if (type == "input")
+    if (type == "input") {
+        inputsSorted[name] = pin;
         return (std::make_unique<nts::InputComponent>());
-    if (type == "output")
+    }
+    if (type == "output") {
+        outputsSorted[name] = pin;
         return (std::make_unique<nts::OutpoutComponent>());
+    }
     if (type == "xor")
         return (std::make_unique<nts::XorComponent>());
-    if (type == "clock")
+    if (type == "clock") {
+        inputsSorted[name] = pin;
         return (std::make_unique<nts::ClockComponent>());
+    }
     if (type == "4001")
         return (std::make_unique<nts::FourTComponent<nts::NorComponent>>());
     if (type == "4011")
@@ -154,34 +178,21 @@ std::unique_ptr<nts::IComponent> Circuit::createComponent(const std::string &typ
     throw Error("Type " + type + " is not defined.");
 }
 
-void Circuit::assignValue()
+void Circuit::assignValue(const std::string name, nts::Tristate value)
 {
-    for (auto it = inputs.begin() ; it != inputs.end() ; ++it) {
-        nts::InputComponent *input = dynamic_cast<nts::InputComponent *>(chipsets[it->first].get());
-        nts::ClockComponent *clock = dynamic_cast<nts::ClockComponent *>(chipsets[it->first].get());
-        if (input)
-            input->changeValue(it->second);
-        else if (clock)
-            clock->changeValue(it->second);
-    }
+    nts::InputComponent *input = dynamic_cast<nts::InputComponent *>(chipsets[name].get());
+    nts::ClockComponent *clock = dynamic_cast<nts::ClockComponent *>(chipsets[name].get());
+    if (input)
+        input->changeValue(value);
+    else if (clock)
+        clock->changeValue(value);
 }
 
 void Circuit::simulate()
 {
     tick += 1;
-    assignValue();
-    for (auto it = chipsets.begin() ; it != chipsets.end(); ++it) {
-        nts::ClockComponent *clock = dynamic_cast<nts::ClockComponent *>(chipsets[it->first].get());
-        nts::LoggerComponent *logger = dynamic_cast<nts::LoggerComponent *>(chipsets[it->first].get());
-        if (logger)
-            (it->second)->compute(1);
-        if (clock) {
-            if (inputs.find(it->first) != inputs.end())
-                inputs.erase(it->first);
-            else
-                clock->simulate(tick);
-        }
-    }
+    for (auto it = chipsets.begin() ; it != chipsets.end(); ++it)
+        (it->second)->simulate(tick);
 }
 
 volatile sig_atomic_t stopLoop;

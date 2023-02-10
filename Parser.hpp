@@ -17,8 +17,6 @@
 #include "Circuit.hpp"
 
 class Parser {
-
-
     public:
         class Error: public std::exception {
             public:
@@ -32,12 +30,15 @@ class Parser {
         };
         Parser(const std::string filename);
         ~Parser();
+        void parseFile();
+        size_t getNbPins() const {return _nbPins;};
+        void createCircuit(nts::Circuit &circuit);
 
-        void parseFile(Circuit &circuit);
-
-    protected:
     private:
         std::string _filename;
+        size_t _nbPins = 2;
+        std::vector<std::vector<std::string>> _chipsets;
+        std::vector<std::vector<std::string>> _links;
 };
 
 #endif /* !PARSER */
