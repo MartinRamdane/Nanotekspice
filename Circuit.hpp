@@ -19,6 +19,7 @@
 #include <signal.h>
 #include <algorithm>
 #include <exception>
+#include <functional>
 #include "IComponent.hpp"
 #include "special_component/FalseComponent.hpp"
 #include "special_component/TrueComponent.hpp"
