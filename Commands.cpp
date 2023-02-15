@@ -47,7 +47,8 @@ void Commands::display()
     std::cout << "input(s):" << std::endl;
     for (auto it = _circuit.chipsets.begin(); it != _circuit.chipsets.end(); it++) {
         nts::InputComponent *castInput = dynamic_cast<nts::InputComponent *>(_circuit.chipsets[it->first].get());
-        if (castInput)
+        nts::ClockComponent *castClock = dynamic_cast<nts::ClockComponent *>(_circuit.chipsets[it->first].get());
+        if (castInput || castClock)
             std::cout << "  " << (it->first) << ": " << (it->second)->compute(1) << std::endl;
     }
     std::cout << "output(s):" << std::endl;

@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** 4013.hpp
+** 4017.hpp
 ** File description:
-** 4013
+** 4017
 */
 
-#ifndef DUAL_FLIPFLOP
-    #define DUAL_FLIPFLOP
+#ifndef JONHSONCOUNTER
+    #define JONHSONCOUNTER
 
 #include "../AComponent.hpp"
 #include <iostream>
@@ -14,17 +14,17 @@
 
 namespace nts
 {
-    class DualDFlipFlopComponent: public nts::AComponent {
+    class JonhsonCounter: public nts::AComponent {
         public:
-            DualDFlipFlopComponent();
-            ~DualDFlipFlopComponent(){};
+            JonhsonCounter();
+            ~JonhsonCounter(){};
 
             void setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin) override;
             nts::Tristate compute(std::size_t pin);
             nts::Tristate checkTruthTable(std::size_t targetPin);
         private:
-            std::vector<nts::Tristate> saveOutput;
+            int counter;
     };
 }
 
-#endif /* !DUAL_FLIPFLOP */
+#endif /* !JONHSONCOUNTER */
