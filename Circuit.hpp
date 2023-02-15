@@ -42,6 +42,12 @@
 namespace nts
 {
     class Circuit: public AComponent {
+
+        struct compInfo {
+            std::unique_ptr<nts::IComponent> comp;
+            std::size_t pin;
+        };
+
         public:
             class Error: public std::exception {
                 public:
@@ -59,10 +65,8 @@ namespace nts
             void simulate(std::size_t tick) override;
             nts::Tristate compute(std::size_t pin);
             std::unique_ptr<nts::IComponent> createComponent(const std::string &type, size_t pin, std::string name);
-            void addComponent(std::string key, std::unique_ptr<nts::IComponent> component);
-            std::map<std::string, std::unique_ptr<nts::IComponent>> chipsets;
-
-        private:
+            void addComponent(std::string key, std::unique_ptr<nts::IComponent> component, std::size_t pin);
+            std::map<std::string, compInfo> chipsets;
     };
 }
 

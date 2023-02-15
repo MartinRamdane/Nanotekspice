@@ -95,15 +95,25 @@ void Parser::parseFile()
 
 void Parser::createCircuit(nts::Circuit &circuit)
 {
-    for (auto chipset: _chipsets)
-        circuit.addComponent(chipset[1], createComponent(chipset[0]));
+    size_t pin = 1;
+    for (auto chipset: _chipsets) {
+        circuit.addComponent(chipset[1], createComponent(chipset[0]), pin);
+        if (chipset[0] == "input" || chipset[0] == "clock") {
+            circuit.setLink(pin, *(circuit.chipsets[chipset[1]].comp.get()), 1);
+            pin++;
+        }
+        if (chipset[0] == "output") {
+            circuit.setLink(pin, *(circuit.chipsets[chipset[1]].comp.get()), 1);
+            pin++;
+        }
+    }
     setLinks(circuit);
 }
 
 void Parser::setLinks(nts::Circuit &circuit)
 {
     for (auto link: _links) {
-            bool srcNameExists = false;
+        bool srcNameExists = false;
         bool targetNameExists = false;
         std::string srcName = link[0].substr(0, link[0].find(":"));
         std::string targetName = link[1].substr(0, link[1].find(":"));
@@ -119,8 +129,8 @@ void Parser::setLinks(nts::Circuit &circuit)
             throw Error("Can\'t link component " + targetName + ": does not exist.");
         int targetPin = stoi(link[1].substr(targetName.size() + 1));
         int srcPin = stoi(link[0].substr(srcName.size() + 1));
-        circuit.chipsets[targetName]->setLink(targetPin, *(circuit.chipsets[srcName].get()), srcPin);
-        circuit.chipsets[srcName]->setLink(srcPin, *(circuit.chipsets[targetName].get()), targetPin);
+        circuit.chipsets[targetName].comp->setLink(targetPin, *(circuit.chipsets[srcName].comp.get()), srcPin);
+        circuit.chipsets[srcName].comp->setLink(srcPin, *(circuit.chipsets[targetName].comp.get()), targetPin);
     }
 }
 

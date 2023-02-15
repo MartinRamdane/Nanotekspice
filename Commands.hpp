@@ -20,7 +20,7 @@ class Commands {
         void display();
         void simulate();
         void loop();
-        int assignValue(const std::string input);
+        void assignValue(const std::string input);
 
     private:
         nts::Circuit &_circuit;
