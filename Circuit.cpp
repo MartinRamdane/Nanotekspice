@@ -159,5 +159,6 @@ std::map<std::string, std::function<std::unique_ptr<IComponent>()>> Circuit::dic
     { "4030", [](){ return (std::make_unique<nts::FourTComponent<nts::XorComponent>>());}},
     { "4069", [](){ return (std::make_unique<nts::SixNotComponent>());}},
     { "4008", [](){ return (std::make_unique<nts::FourAdderComponent>());}},
+    { "4013", [](){ return (std::make_unique<nts::DualDFlipFlopComponent>());}},
     { "logger", [](){ return (std::make_unique<nts::LoggerComponent>());}}
 };

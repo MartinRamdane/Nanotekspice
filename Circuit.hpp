@@ -37,6 +37,7 @@
 #include "gates_component/4069Component.hpp"
 #include "advanced_components/4008Component.hpp"
 #include "advanced_components/LoggerComponent.hpp"
+#include "advanced_components/4013Component.hpp"
 
 namespace nts
 {
