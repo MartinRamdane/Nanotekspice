@@ -34,6 +34,8 @@ void nts::ClockComponent::simulate(std::size_t tick)
         haveToAssign = false;
         return;
     }
+    if (valueOutput[0] == nts::Undefined)
+        return;
     if (valueOutput[0] == nts::True) {
         valueOutput[0] = nts::False;
     } else {

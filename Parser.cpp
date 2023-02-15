@@ -16,6 +16,25 @@ Parser::~Parser()
 {
 }
 
+bool Parser::checkSpaces(const char *str)
+{
+    for (size_t i = 0; i < strlen(str); i++) {
+        if (!isspace(str[i]))
+            return false;
+    }
+    return true;
+}
+
+std::string Parser::checkComment(std::string str)
+{
+    size_t index = str.find("#");
+    if (index != std::string::npos) {
+        str = (str.substr(0, index));
+        str.erase(std::remove_if(str.begin(), str.end(), ::isspace), str.end());
+    }
+    return str;
+}
+
 void Parser::parseFile()
 {
     std::ifstream file(_filename.c_str());
@@ -31,11 +50,22 @@ void Parser::parseFile()
             continue;
         if (line.c_str()[0] == '#')
             continue;
+        if (checkSpaces(line.c_str()))
+            continue;
         std::istringstream iss(line);
         std::string word;
         std::vector<std::string> tab;
-        while(iss >> word)
+        while(iss >> word) {
+            if (word.find("#") != std::string::npos) {
+                word = checkComment(word);
+                if (word.size() > 0)
+                    tab.push_back(word);
+                break;
+            }
             tab.push_back(word);
+        }
+        if (tab.size() < 1)
+            continue;
         if (chip && tab[0] != ".links:") {
             if (tab.size() > 2)
                 throw Error("Invalid informations on Chipset.");
@@ -108,6 +138,7 @@ std::map<std::string, std::function<std::unique_ptr<nts::IComponent>()>> Parser:
     { "true", [](){ return (std::make_unique<nts::TrueComponent>());}},
     { "and", [](){ return (std::make_unique<nts::AndComponent>());}},
     { "not", [](){ return (std::make_unique<nts::NotComponent>());}},
+    { "or", [](){ return (std::make_unique<nts::OrComponent>());}},
     { "xor", [](){ return (std::make_unique<nts::XorComponent>());}},
     { "input", [](){ return (std::make_unique<nts::InputComponent>());}},
     { "output", [](){ return (std::make_unique<nts::OutpoutComponent>());}},

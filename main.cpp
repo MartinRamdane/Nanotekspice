@@ -4,7 +4,7 @@
 
 int main(int ac, char **av)
 {
-    if (ac > 1) {
+    if (ac == 2) {
         Parser parser(av[1]);
         try {
             parser.parseFile();
@@ -16,6 +16,7 @@ int main(int ac, char **av)
             std::cout << e.what() << std::endl;
             return 84;
         }
+        return 0;
     }
-    return 0;
+    return 84;
 }

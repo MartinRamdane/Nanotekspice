@@ -30,11 +30,15 @@ nts::Tristate nts::DualDFlipFlopComponent::checkTruthTable(std::size_t targetPin
     std::size_t savePin = (targetPin == 1 || targetPin == 2 ? targetPin : targetPin == 13 ? 3 : 4);
     nts::Tristate result;
     if (targetPin <= 2) {
-        Cl = pins[3].targetComp->compute(pins[pins[3].targetPin].targetPin); R = pins[4].targetComp->compute(pins[pins[4].targetPin].targetPin);
-        D = pins[5].targetComp->compute(pins[pins[5].targetPin].targetPin); S = pins[6].targetComp->compute(pins[pins[6].targetPin].targetPin);
+        Cl = pins[3].targetComp->compute(pins[pins[3].targetPin].targetPin);
+        R = pins[4].targetComp->compute(pins[pins[4].targetPin].targetPin);
+        D = pins[5].targetComp->compute(pins[pins[5].targetPin].targetPin);
+        S = pins[6].targetComp->compute(pins[pins[6].targetPin].targetPin);
     } else {
-        Cl = pins[11].targetComp->compute(pins[pins[11].targetPin].targetPin); R = pins[10].targetComp->compute(pins[pins[10].targetPin].targetPin);
-        D = pins[9].targetComp->compute(pins[pins[9].targetPin].targetPin); S = pins[8].targetComp->compute(pins[pins[8].targetPin].targetPin);
+        Cl = pins[11].targetComp->compute(pins[pins[11].targetPin].targetPin);
+        R = pins[10].targetComp->compute(pins[pins[10].targetPin].targetPin);
+        D = pins[9].targetComp->compute(pins[pins[9].targetPin].targetPin);
+        S = pins[8].targetComp->compute(pins[pins[8].targetPin].targetPin);
     }
     if (targetPin == 1 || targetPin == 13) {
         if (Cl == True && D == False && R == False && S == False)

@@ -14,6 +14,9 @@
 #include <string>
 #include <vector>
 #include <exception>
+#include <cstring>
+#include <algorithm>
+#include <cctype>
 #include "Circuit.hpp"
 #include "Icomponent.hpp"
 
@@ -36,6 +39,8 @@ class Parser {
         void createCircuit(nts::Circuit &circuit);
         void setLinks(nts::Circuit &circuit);
         std::unique_ptr<nts::IComponent> createComponent(const std::string &type);
+        bool checkSpaces(const char *str);
+        std::string checkComment(std::string str);
 
     private:
         std::string _filename;
