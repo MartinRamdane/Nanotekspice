@@ -56,22 +56,13 @@ namespace nts
             Circuit(size_t nbPins = 2);
             ~Circuit();
 
-            void createLink(std::string source, std::string target);
-            void displayInputsComponent();
-            void displayOutputsComponent();
-            int assignValue(const std::string input);
             void simulate(std::size_t tick) override;
             nts::Tristate compute(std::size_t pin);
             std::unique_ptr<nts::IComponent> createComponent(const std::string &type, size_t pin, std::string name);
-            void setChipsetsMap(std::string key, const std::string type, size_t pin);
+            void addComponent(std::string key, std::unique_ptr<nts::IComponent> component);
+            std::map<std::string, std::unique_ptr<nts::IComponent>> chipsets;
 
         private:
-            std::map<std::string, std::unique_ptr<nts::IComponent>> chipsets;
-            std::map<std::string, nts::Tristate> inputs;
-            std::map<std::string, size_t> inputsSorted;
-            std::map<std::string, size_t> outputsSorted;
-            static std::map<std::string, std::function<std::unique_ptr<IComponent>()>> dico;
-            int tick;
     };
 }
 

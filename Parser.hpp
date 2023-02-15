@@ -15,6 +15,7 @@
 #include <vector>
 #include <exception>
 #include "Circuit.hpp"
+#include "Icomponent.hpp"
 
 class Parser {
     public:
@@ -33,10 +34,13 @@ class Parser {
         void parseFile();
         size_t getNbPins() const {return _nbPins;};
         void createCircuit(nts::Circuit &circuit);
+        void setLinks(nts::Circuit &circuit);
+        std::unique_ptr<nts::IComponent> createComponent(const std::string &type);
 
     private:
         std::string _filename;
         size_t _nbPins = 2;
+        static std::map<std::string, std::function<std::unique_ptr<nts::IComponent>()>> dico;
         std::vector<std::vector<std::string>> _chipsets;
         std::vector<std::vector<std::string>> _links;
 };

@@ -65,12 +65,60 @@ void Parser::parseFile()
 
 void Parser::createCircuit(nts::Circuit &circuit)
 {
-    size_t size = 1;
-    for (auto chipset: _chipsets) {
-        circuit.setChipsetsMap(chipset[1], chipset[0], size);
-        if (chipset[0] == "output" || chipset[0] == "input" || chipset[0] == "clock")
-            size += 1;
-    }
-    for (auto link: _links)
-        circuit.createLink(link[0], link[1]);
+    for (auto chipset: _chipsets)
+        circuit.addComponent(chipset[1], createComponent(chipset[0]));
+    setLinks(circuit);
 }
+
+void Parser::setLinks(nts::Circuit &circuit)
+{
+    for (auto link: _links) {
+            bool srcNameExists = false;
+        bool targetNameExists = false;
+        std::string srcName = link[0].substr(0, link[0].find(":"));
+        std::string targetName = link[1].substr(0, link[1].find(":"));
+        for (auto it = circuit.chipsets.begin() ; it != circuit.chipsets.end(); ++it) {
+            if (it->first == srcName)
+                srcNameExists = true;
+            if (it->first == targetName)
+                targetNameExists = true;
+        }
+        if (!srcNameExists)
+            throw Error("Can\'t link component " + srcName + ": does not exist.");
+        if (!targetNameExists)
+            throw Error("Can\'t link component " + targetName + ": does not exist.");
+        int targetPin = stoi(link[1].substr(targetName.size() + 1));
+        int srcPin = stoi(link[0].substr(srcName.size() + 1));
+        circuit.chipsets[targetName]->setLink(targetPin, *(circuit.chipsets[srcName].get()), srcPin);
+        circuit.chipsets[srcName]->setLink(srcPin, *(circuit.chipsets[targetName].get()), targetPin);
+    }
+}
+
+std::unique_ptr<nts::IComponent> Parser::createComponent(const std::string &type)
+{
+    if (type.find(":") != std::string::npos)
+        throw Error(".links is misplaced or not exists.");
+    if (dico.find(type) == dico.end())
+        throw Error("Unknown component.");
+    return dico[type]();
+}
+
+std::map<std::string, std::function<std::unique_ptr<nts::IComponent>()>> Parser::dico = {
+    { "false", [](){ return (std::make_unique<nts::FalseComponent>());}},
+    { "true", [](){ return (std::make_unique<nts::TrueComponent>());}},
+    { "and", [](){ return (std::make_unique<nts::AndComponent>());}},
+    { "not", [](){ return (std::make_unique<nts::NotComponent>());}},
+    { "xor", [](){ return (std::make_unique<nts::XorComponent>());}},
+    { "input", [](){ return (std::make_unique<nts::InputComponent>());}},
+    { "output", [](){ return (std::make_unique<nts::OutpoutComponent>());}},
+    { "clock", [](){ return (std::make_unique<nts::ClockComponent>());}},
+    { "4001", [](){ return (std::make_unique<nts::FourTComponent<nts::NorComponent>>());}},
+    { "4011", [](){ return (std::make_unique<nts::FourTComponent<nts::NandComponent>>());}},
+    { "4081", [](){ return (std::make_unique<nts::FourTComponent<nts::AndComponent>>());}},
+    { "4071", [](){ return (std::make_unique<nts::FourTComponent<nts::OrComponent>>());}},
+    { "4030", [](){ return (std::make_unique<nts::FourTComponent<nts::XorComponent>>());}},
+    { "4069", [](){ return (std::make_unique<nts::SixNotComponent>());}},
+    { "4008", [](){ return (std::make_unique<nts::FourAdderComponent>());}},
+    { "4013", [](){ return (std::make_unique<nts::DualDFlipFlopComponent>());}},
+    { "logger", [](){ return (std::make_unique<nts::LoggerComponent>());}}
+};

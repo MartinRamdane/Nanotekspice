@@ -28,7 +28,7 @@ void Commands::mainLoop()
         else if (input == "simulate")
             simulate();
         else if (input.find("=") != std::string::npos)
-            _circuit.assignValue(input);
+            assignValue(input);
         else if (input == "exit")
             break;
         std::cout << "> ";
@@ -45,9 +45,48 @@ void Commands::display()
 {
     std::cout << "tick: " << tick << std::endl;
     std::cout << "input(s):" << std::endl;
-    _circuit.displayInputsComponent();
+    for (auto it = _circuit.chipsets.begin(); it != _circuit.chipsets.end(); it++) {
+        nts::InputComponent *castInput = dynamic_cast<nts::InputComponent *>(_circuit.chipsets[it->first].get());
+        if (castInput)
+            std::cout << "  " << (it->first) << ": " << (it->second)->compute(1) << std::endl;
+    }
     std::cout << "output(s):" << std::endl;
-    _circuit.displayOutputsComponent();
+    for (auto it = _circuit.chipsets.begin(); it != _circuit.chipsets.end(); it++) {
+        nts::OutpoutComponent *castOutput = dynamic_cast<nts::OutpoutComponent *>(_circuit.chipsets[it->first].get());
+        if (castOutput)
+            std::cout << "  " << (it->first) << ": " << (it->second)->compute(1) << std::endl;
+    }
+}
+
+int Commands::assignValue(const std::string input)
+{
+    bool inputIsFind = false;
+    std::string target = input.substr(0, input.find("="));
+    for (auto it = _circuit.chipsets.begin() ; it != _circuit.chipsets.end() ; ++it) {
+        nts::InputComponent *castInput = dynamic_cast<nts::InputComponent *>(_circuit.chipsets[it->first].get());
+        nts::ClockComponent *castclock = dynamic_cast<nts::ClockComponent *>(_circuit.chipsets[it->first].get());
+        if ((castInput || castclock) && it->first == target)
+            inputIsFind = true;
+    }
+    if (!inputIsFind) {
+        std::cout << "> ";
+        return 1;
+    }
+    inputIsFind = false;
+    std::string val = input.substr(target.size() + 1);
+    val.erase(std::remove_if(val.begin(), val.end(), ::isspace), val.end());
+    if (val != "0" && val != "1" && val != "U") {
+        std::cout << "> ";
+        return 1;
+    }
+    nts::Tristate value = val == "U" ? nts::Undefined : (stoi(val) == 0 ? nts::False : nts::True);
+    nts::InputComponent *inputCast = dynamic_cast<nts::InputComponent *>(_circuit.chipsets[target].get());
+    nts::ClockComponent *clockCast = dynamic_cast<nts::ClockComponent *>(_circuit.chipsets[target].get());
+    if (inputCast)
+        inputCast->changeValue(value);
+    else if (clockCast)
+        clockCast->changeValue(value);
+    return 0;
 }
 
 volatile sig_atomic_t stopLoop;
