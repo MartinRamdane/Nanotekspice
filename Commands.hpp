@@ -10,6 +10,9 @@
 
 #include <iostream>
 #include "Circuit.hpp"
+#include "special_component/InputComponent.hpp"
+#include "special_component/OutputComponent.hpp"
+#include "special_component/ClockComponent.hpp"
 
 class Commands {
     public:

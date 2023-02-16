@@ -21,23 +21,7 @@
 #include <exception>
 #include <functional>
 #include "IComponent.hpp"
-#include "special_component/FalseComponent.hpp"
-#include "special_component/TrueComponent.hpp"
-#include "elementary_component/AndComponent.hpp"
-#include "elementary_component/OrComponent.hpp"
-#include "elementary_component/XorComponent.hpp"
-#include "elementary_component/NorComponent.hpp"
-#include "elementary_component/NandComponent.hpp"
-#include "special_component/InputComponent.hpp"
-#include "special_component/OutputComponent.hpp"
-#include "elementary_component/NotComponent.hpp"
-#include "special_component/ClockComponent.hpp"
-#include "elementary_component/XorComponent.hpp"
-#include "gates_component/FourTComponent.hpp"
-#include "gates_component/4069Component.hpp"
-#include "advanced_components/4008Component.hpp"
-#include "advanced_components/LoggerComponent.hpp"
-#include "advanced_components/4013Component.hpp"
+#include "AComponent.hpp"
 
 namespace nts
 {
