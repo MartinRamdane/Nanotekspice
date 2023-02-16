@@ -36,6 +36,7 @@
 #include "advanced_components/4008Component.hpp"
 #include "advanced_components/LoggerComponent.hpp"
 #include "advanced_components/4013Component.hpp"
+#include "advanced_components/4017Component.hpp"
 #include "advanced_components/4514Component.hpp"
 
 class Parser {
