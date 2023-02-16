@@ -26,7 +26,7 @@ nts::Tristate nts::FourBitsDecoder::checkTruthTable(std::size_t pin)
         return False;
     Tristate LE = pins[1].targetComp->compute(1);
     if (Inhibit == False && LE == False)
-        return Undefined;
+        return (pins[1].targetComp->compute(1));
     Tristate A = pins[2].targetComp->compute(1);
     Tristate B = pins[3].targetComp->compute(1);
     Tristate C = pins[21].targetComp->compute(1);
