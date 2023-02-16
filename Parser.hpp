@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <cctype>
 #include "Circuit.hpp"
-#include "Icomponent.hpp"
+#include "IComponent.hpp"
 
 class Parser {
     public:
