@@ -45,21 +45,18 @@ void Commands::display()
 {
     std::cout << "tick: " << tick << std::endl;
     std::cout << "input(s):" << std::endl;
-    int pin = 1;
     for (auto it = _circuit.chipsets.begin(); it != _circuit.chipsets.end(); it++) {
         nts::InputComponent *castInput = dynamic_cast<nts::InputComponent *>(_circuit.chipsets[it->first].comp.get());
         nts::ClockComponent *castClock = dynamic_cast<nts::ClockComponent *>(_circuit.chipsets[it->first].comp.get());
-        if (castInput || castClock) {
-            std::cout << "  " << (it->first) << ": " << _circuit.compute(pin) << std::endl;
-            pin++;
-        }
+        if (castInput || castClock)
+            std::cout << "  " << (it->first) << ": " << _circuit.compute(_circuit.chipsets[it->first].pin) << std::endl;
 
     }
     std::cout << "output(s):" << std::endl;
     for (auto it = _circuit.chipsets.begin(); it != _circuit.chipsets.end(); it++) {
         nts::OutpoutComponent *castOutput = dynamic_cast<nts::OutpoutComponent *>(_circuit.chipsets[it->first].comp.get());
         if (castOutput)
-            std::cout << "  " << (it->first) << ": " << _circuit.compute(pin) << std::endl;
+            std::cout << "  " << (it->first) << ": " << _circuit.compute(_circuit.chipsets[it->first].pin) << std::endl;
     }
 }
 
