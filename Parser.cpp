@@ -178,5 +178,6 @@ std::map<std::string, std::function<std::unique_ptr<nts::IComponent>()>> Parser:
     { "4013", [](){ return (std::make_unique<nts::DualDFlipFlopComponent>());}},
     { "4017", [](){ return (std::make_unique<nts::JonhsonCounter>());}},
     { "logger", [](){ return (std::make_unique<nts::LoggerComponent>());}},
-    { "4514", [](){ return (std::make_unique<nts::FourBitsDecoder>());}}
+    { "4514", [](){ return (std::make_unique<nts::FourBitsDecoder>());}},
+    { "4512", [](){ return (std::make_unique<nts::Selector>());}}
 };
