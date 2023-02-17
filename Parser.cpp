@@ -35,6 +35,50 @@ std::string Parser::checkComment(std::string str)
     return str;
 }
 
+int Parser::checkErrorOnLine(std::string line)
+{
+    if (line.size() == 0)
+        return 1;
+    if (line.c_str()[0] == '#')
+        return 1;
+    if (checkSpaces(line.c_str()))
+        return 1;
+    return 0;
+}
+
+std::vector<std::string> Parser::getAllWordsOnLine(std::string line)
+{
+    std::istringstream iss(line);
+    std::string word;
+    std::vector<std::string> tab;
+    while(iss >> word) {
+        if (word.find("#") != std::string::npos) {
+            word = checkComment(word);
+            if (word.size() > 0)
+                tab.push_back(word);
+            break;
+        }
+        tab.push_back(word);
+    }
+    return tab;
+}
+
+void Parser::addChipsetsAndLinks(bool chip, bool link, std::vector<std::string> tab)
+{
+    if (chip && tab[0] != ".links:") {
+        if (tab.size() > 2)
+            throw Error("Invalid informations on Chipset.");
+        if (tab[0] == "input" || tab[0] == "clock" || tab[0] == "output")
+            _nbPins++;
+        _chipsets.push_back(tab);
+    }
+    if (link) {
+        if (tab.size() > 2)
+            throw Error("Invalid informations on links.");
+        _links.push_back(tab);
+    }
+}
+
 void Parser::parseFile()
 {
     std::ifstream file(_filename.c_str());
@@ -43,48 +87,19 @@ void Parser::parseFile()
     if (file.peek() == std::ifstream::traits_type::eof())
         throw Error("Empty file");
     std::string line;
-    bool chip = false;
-    bool link = false;
+    bool chip = false, link = false;
     while(getline(file, line)) {
-        if (line.size() == 0)
+        if (checkErrorOnLine(line) == 1)
             continue;
-        if (line.c_str()[0] == '#')
-            continue;
-        if (checkSpaces(line.c_str()))
-            continue;
-        std::istringstream iss(line);
-        std::string word;
-        std::vector<std::string> tab;
-        while(iss >> word) {
-            if (word.find("#") != std::string::npos) {
-                word = checkComment(word);
-                if (word.size() > 0)
-                    tab.push_back(word);
-                break;
-            }
-            tab.push_back(word);
-        }
+        std::vector<std::string> tab = getAllWordsOnLine(line);
         if (tab.size() < 1)
             continue;
-        if (chip && tab[0] != ".links:") {
-            if (tab.size() > 2)
-                throw Error("Invalid informations on Chipset.");
-            if (tab[0] == "input" || tab[0] == "clock" || tab[0] == "output")
-                _nbPins++;
-            _chipsets.push_back(tab);
-        }
-        if (link) {
-            if (tab.size() > 2)
-                throw Error("Invalid informations on links.");
-            _links.push_back(tab);
-        }
+        addChipsetsAndLinks(chip, link, tab);
         if (tab[0] == ".chipsets:") {
-            chip = true;
-            link = false;
+            chip = true; link = false;
         }
         if (tab[0] == ".links:") {
-            link = true;
-            chip = false;
+            link = true; chip = false;
         }
     }
     if (_links.size() == 0)

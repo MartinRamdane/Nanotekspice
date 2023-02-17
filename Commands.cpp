@@ -70,15 +70,12 @@ void Commands::assignValue(const std::string input)
         if ((castInput || castclock) && it->first == target)
             inputIsFind = true;
     }
-    if (!inputIsFind) {
-        std::cout << "> ";
+    if (!inputIsFind)
         return;
-    }
     inputIsFind = false;
     std::string val = input.substr(target.size() + 1);
     val.erase(std::remove_if(val.begin(), val.end(), ::isspace), val.end());
     if (val != "0" && val != "1" && val != "U") {
-        std::cout << "> ";
         return;
     }
     nts::Tristate value = val == "U" ? nts::Undefined : (stoi(val) == 0 ? nts::False : nts::True);

@@ -60,6 +60,9 @@ class Parser {
         std::unique_ptr<nts::IComponent> createComponent(const std::string &type);
         bool checkSpaces(const char *str);
         std::string checkComment(std::string str);
+        int checkErrorOnLine(std::string line);
+        std::vector<std::string> getAllWordsOnLine(std::string line);
+        void addChipsetsAndLinks(bool chip, bool link, std::vector<std::string> tab);
 
     private:
         std::string _filename;
