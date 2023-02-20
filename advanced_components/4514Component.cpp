@@ -7,7 +7,7 @@
 
 #include "4514Component.hpp"
 
-nts::FourBitsDecoder::FourBitsDecoder() : AComponent(23)
+nts::FourBitsDecoder::FourBitsDecoder() : AComponent(24)
 {
 }
 
@@ -19,7 +19,7 @@ void nts::FourBitsDecoder::setLink(std::size_t pin, nts::IComponent &other, std:
     pins[pin].targetComp = &other;
 }
 
-nts::Tristate nts::FourBitsDecoder::checkTruthTable(std::size_t pin)
+nts::Tristate nts::FourBitsDecoder::checkTruthTable(size_t pin)
 {
     Tristate Inhibit = pins[23].targetComp->compute(1);
     if (Inhibit == True)
@@ -31,24 +31,25 @@ nts::Tristate nts::FourBitsDecoder::checkTruthTable(std::size_t pin)
     Tristate B = pins[3].targetComp->compute(1);
     Tristate C = pins[21].targetComp->compute(1);
     Tristate D = pins[22].targetComp->compute(1);
-    if (LE == True && Inhibit == False) {
+    if (Inhibit == False && LE == True) {
         switch (pin) {
-            case 11: return ((A == False && B == False && C == False && D == False) ? True : Undefined);
-            case 9: return ((A == True && B == False && C == False && D == False) ? True : Undefined);
-            case 10: return ((A == False && B == True && C == False && D == False) ? True : Undefined);
-            case 8: return ((A == True && B == True && C == False && D == False) ? True : Undefined);
-            case 7: return ((A == False && B == False && C == True && D == False) ? True : Undefined);
-            case 6: return ((A == True && B == False && C == True && D == False) ? True : Undefined);
-            case 5: return ((A == False && B == True && C == True && D == False) ? True : Undefined);
-            case 4: return ((A == True && B == True && C == True && D == False) ? True : Undefined);
-            case 18: return ((A == False && B == False && C == False && D == True) ? True : Undefined);
-            case 17: return ((A == True && B == False && C == False && D == True) ? True : Undefined);
-            case 20: return ((A == False && B == True && C == False && D == True) ? True : Undefined);
-            case 19: return ((A == True && B == True && C == False && D == True) ? True : Undefined);
-            case 14: return ((A == False && B == False && C == True && D == True) ? True : Undefined);
-            case 13: return ((A == True && B == False && C == True && D == True) ? True : Undefined);
-            case 16: return ((A == False && B == True && C == True && D == True) ? True : Undefined);
-            case 15: return ((A == True && B == True && C == True && D == True) ? True : Undefined);
+            case 11: return (D == False && C == False && B == False && A == False ? True : False);
+            case 9: return (D == False && C == False && B == False && A == True ? True : False);
+            case 10: return (D == False && C == False && B == True && A == False ? True : False);
+            case 8: return (D == False && C == False && B == True && A == True ? True : False);
+            case 7: return (D == False && C == True && B == False && A == False ? True : False);
+            case 6: return (D == False && C == True && B == False && A == True ? True : False);
+            case 5: return (D == False && C == True && B == True && A == False ? True : False);
+            case 4: return (D == False && C == True && B == True && A == True ? True : False);
+            case 18: return (D == True && C == False && B == False && A == False ? True : False);
+            case 17: return (D == True && C == False && B == False && A == True ? True : False);
+            case 20: return (D == True && C == False && B == True && A == False ? True : False);
+            case 19: return (D == True && C == False && B == True && A == True ? True : False);
+            case 14: return (D == True && C == True && B == False && A == False ? True : False);
+            case 13: return (D == True && C == True && B == False && A == True ? True : False);
+            case 16: return (D == True && C == True && B == True && A == False ? True : False);
+            case 15: return (D == True && C == True && B == True && A == True ? True : False);
+            default: return Undefined;
         }
     }
    return Undefined;

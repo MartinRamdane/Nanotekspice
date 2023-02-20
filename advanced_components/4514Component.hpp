@@ -21,7 +21,7 @@ namespace nts
 
             void setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin) override;
             nts::Tristate compute(std::size_t pin);
-            nts::Tristate checkTruthTable(std::size_t pin);
+            nts::Tristate checkTruthTable(size_t pin);
         private:
     };
 }
