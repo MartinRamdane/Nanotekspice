@@ -28,6 +28,8 @@ AComponent::~AComponent()
 void AComponent::setLink(std::size_t pin, IComponent &other, std::size_t otherPin)
 {
     pins[pin].targetPin = otherPin;
+    if (pins[pin].targetComp != NULL)
+        throw Error("Already Link");
     pins[pin].targetComp = &other;
 }
 
