@@ -22,16 +22,16 @@ void nts::FourBitsDecoder::setLink(std::size_t pin, nts::IComponent &other, std:
 nts::Tristate nts::FourBitsDecoder::checkTruthTable(size_t pin)
 {
     Tristate Inhibit = pins[23].targetComp->compute(1);
-    if (Inhibit == True)
+    Tristate Strobe = pins[1].targetComp->compute(1);
+    if (Inhibit == True && Strobe == True)
         return False;
-    Tristate LE = pins[1].targetComp->compute(1);
-    if (Inhibit == False && LE == False)
-        return (pins[1].targetComp->compute(1));
     Tristate A = pins[2].targetComp->compute(1);
     Tristate B = pins[3].targetComp->compute(1);
     Tristate C = pins[21].targetComp->compute(1);
     Tristate D = pins[22].targetComp->compute(1);
-    if (Inhibit == False && LE == True) {
+    if (Inhibit == False && Strobe == True) {
+        if (A == Undefined || B == Undefined || C == Undefined || D == Undefined)
+            return Undefined;
         switch (pin) {
             case 11: return (D == False && C == False && B == False && A == False ? True : False);
             case 9: return (D == False && C == False && B == False && A == True ? True : False);
