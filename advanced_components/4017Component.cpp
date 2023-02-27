@@ -11,6 +11,8 @@ nts::JonhsonCounter::JonhsonCounter() : AComponent(16)
 {
     counter = -1;
     prevTick = 0;
+    _oldInput1State = Undefined;
+    _oldInput2State = Undefined;
     for (std::size_t i=1; i < 12; i++) {
         if (i != 8)
             savedState[i] = nts::Undefined;
@@ -20,7 +22,7 @@ nts::JonhsonCounter::JonhsonCounter() : AComponent(16)
 void nts::JonhsonCounter::setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin)
 {
     if (pin < 1 || pin > 15 || pin == 8)
-        throw Error("Invalid pin on 4013 component.");
+        throw Error("Invalid pin on 4017 component.");
     pins[pin].targetPin = otherPin;
     pins[pin].targetComp = &other;
 }
@@ -66,18 +68,20 @@ void nts::JonhsonCounter::simulate(std::size_t tick)
 {
     nts::Tristate Cl = pins[14].targetComp->compute(pins[pins[14].targetPin].targetPin);
     nts::Tristate i1 = pins[13].targetComp->compute(pins[pins[13].targetPin].targetPin);
-    if (tick != prevTick && i1 == False && Cl == True) {
+    if (tick != prevTick && (((Cl == True && _oldInput1State == False) && i1 == False) || ((i1 == False && _oldInput1State == True) && Cl == True))) {
         counter++;
-        prevTick = tick;
     }
     if (counter == 10)
         counter = 0;
+    _oldInput1State = Cl;
+    _oldInput2State = i1;
+    prevTick = tick;
 }
 
 nts::Tristate nts::JonhsonCounter::compute(std::size_t pin)
 {
     if (pin < 1 || pin > 15 || pin == 8)
-        throw Error("Invalid pin on 4013 component.");
+        throw Error("Invalid pin on 4017 component.");
     nts::Tristate Cl = pins[14].targetComp->compute(pins[pins[14].targetPin].targetPin);
     nts::Tristate i1 = pins[13].targetComp->compute(pins[pins[13].targetPin].targetPin);
     nts::Tristate R = pins[15].targetComp->compute(pins[pins[15].targetPin].targetPin);
@@ -87,7 +91,7 @@ nts::Tristate nts::JonhsonCounter::compute(std::size_t pin)
     if (R == True || counter == 10)
         counter = 0;
     if (pin != 13 && pin != 14 && pin != 15 &&  pin != 12) {
-        if (Cl ==  nts::True) {
+        if (Cl == nts::True) {
             result = getPinValue(pin);
         } else {
             result = (savedState[pin]);

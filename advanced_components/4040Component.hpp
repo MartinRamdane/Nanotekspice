@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** 4017.hpp
+** 4040.hpp
 ** File description:
-** 4017
+** 4040
 */
 
-#ifndef JONHSONCOUNTER
-    #define JONHSONCOUNTER
+#ifndef BITSCOUNTERA
+    #define BITSCOUNTERA
 
 #include "../AComponent.hpp"
 #include <iostream>
@@ -15,10 +15,10 @@
 
 namespace nts
 {
-    class JonhsonCounter: public nts::AComponent {
+    class RippleCounter: public nts::AComponent {
         public:
-            JonhsonCounter();
-            ~JonhsonCounter(){};
+            RippleCounter();
+            ~RippleCounter(){};
 
             void setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin) override;
             void simulate(std::size_t tick);
@@ -26,11 +26,9 @@ namespace nts
             nts::Tristate checkTruthTable(std::size_t targetPin);
             nts::Tristate getPinValue(std::size_t targetPin);
         private:
-            std::size_t prevTick;
-            int counter;
             std::map<std::size_t, nts::Tristate> savedState;
-            nts::Tristate _oldInput1State;
-            nts::Tristate _oldInput2State;
+            int _pinsOn;
+            int _counter;
     };
 }
 
