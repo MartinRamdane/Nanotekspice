@@ -74,10 +74,7 @@ void nts::JonhsonCounter::simulate(std::size_t tick)
     if (counter == 10)
         counter = 0;
     _oldInput1State = Cl;
-    std::cout << "old i1: " << _oldInput2State << std::endl;
     _oldInput2State = i1;
-    std::cout << "old i1: " << _oldInput2State << std::endl;
-    std::cout << "counter: " << counter << std::endl;
     prevTick = tick;
 }
 
