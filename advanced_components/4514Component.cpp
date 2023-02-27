@@ -9,6 +9,13 @@
 
 nts::FourBitsDecoder::FourBitsDecoder() : AComponent(24)
 {
+    strobe = Undefined;
+    inhibit = Undefined;
+    a = Undefined;
+    b = Undefined;
+    c = Undefined;
+    d = Undefined;
+    toChangeStrobe = false;
 }
 
 void nts::FourBitsDecoder::setLink(std::size_t pin, nts::IComponent &other, std::size_t otherPin)
@@ -19,16 +26,18 @@ void nts::FourBitsDecoder::setLink(std::size_t pin, nts::IComponent &other, std:
     pins[pin].targetComp = &other;
 }
 
-nts::Tristate nts::FourBitsDecoder::checkTruthTable(size_t pin)
+void nts::FourBitsDecoder::simulate(std::size_t tick)
+{
+    tick += 1;
+    if (strobe == Undefined)
+        toChangeStrobe = true;
+}
+
+nts::Tristate nts::FourBitsDecoder::checkTruthTable(size_t pin, Tristate A, Tristate B, Tristate C, Tristate D, Tristate Strobe)
 {
     Tristate Inhibit = pins[23].targetComp->compute(1);
-    Tristate Strobe = pins[1].targetComp->compute(1);
     if (Inhibit == True && Strobe == True)
         return False;
-    Tristate A = pins[2].targetComp->compute(1);
-    Tristate B = pins[3].targetComp->compute(1);
-    Tristate C = pins[21].targetComp->compute(1);
-    Tristate D = pins[22].targetComp->compute(1);
     if (Inhibit == False && Strobe == True) {
         if (A == Undefined || B == Undefined || C == Undefined || D == Undefined)
             return Undefined;
@@ -59,7 +68,18 @@ nts::Tristate nts::FourBitsDecoder::compute(std::size_t pin)
 {
     if (pin < 1 || pin > 23 || pin == 12)
         throw Error("Invalid pin on 4514 component.");
+    if (toChangeStrobe) {
+        strobe = pins[1].targetComp->compute(1);
+        toChangeStrobe = false;
+    }
+    if (strobe == True && pins[1].targetComp->compute(1) == False) {
+        a = pins[2].targetComp->compute(1);
+        b = pins[3].targetComp->compute(1);
+        c = pins[21].targetComp->compute(1);
+        d = pins[22].targetComp->compute(1);
+    } else
+        strobe = pins[1].targetComp->compute(1);
     if (pin >= 4 && pin <= 20)
-        return checkTruthTable(pin);
+        return checkTruthTable(pin, a, b, c, d, strobe);
     return (pins[pin].targetComp->compute(pins[pins[pin].targetPin].targetPin));
 };
