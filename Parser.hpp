@@ -39,6 +39,7 @@
 #include "advanced_components/4017Component.hpp"
 #include "advanced_components/4514Component.hpp"
 #include "advanced_components/4512Component.hpp"
+#include "advanced_components/2716Component.hpp"
 
 class Parser {
     public:

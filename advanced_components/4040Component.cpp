@@ -10,6 +10,8 @@
 nts::RippleCounter::RippleCounter() : AComponent(16)
 {
     _pinsOn = 0;
+    _mainCounter = 0;
+    _littleCounter = 0;
     _counter = 0;
     for (std::size_t i=1; i < 16; i++) {
         if (i != 8 && i != 10 && i != 11)
@@ -96,7 +98,7 @@ void nts::RippleCounter::simulate(std::size_t tick)
 nts::Tristate nts::RippleCounter::compute(std::size_t pin)
 {
     if (pin < 1 || pin > 15 || pin == 8)
-        throw Error("Invalid pin on 4013 component.");
+        throw Error("Invalid pin on 4040 component.");
     nts::Tristate Cl = pins[14].targetComp->compute(pins[pins[14].targetPin].targetPin);
     nts::Tristate i1 = pins[13].targetComp->compute(pins[pins[13].targetPin].targetPin);
     nts::Tristate R = pins[15].targetComp->compute(pins[pins[15].targetPin].targetPin);
